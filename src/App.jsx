@@ -7,13 +7,13 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
-import Profile from './pages/Profile';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="w-screen h-screen flex flex-col bg-rose-50 overflow-hidden">
+        <div className="w-screen h-screen flex flex-col bg-slate-950 overflow-hidden">
           <ToastNotification />
           <main className="w-screen h-screen flex m-0 p-0 overflow-hidden">
             <Routes>
@@ -22,12 +22,20 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
 
-              {/* Protected User Dashboard Route */}
+              {/* Protected Cinema Dashboard Routes */}
               <Route
                 path="/profile"
                 element={
                   <ProtectedRoute>
-                    <Profile />
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
                   </ProtectedRoute>
                 }
               />

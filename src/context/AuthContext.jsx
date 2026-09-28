@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
   }, [currentUser]);
 
   // Real-time login handler
-  const login = async (email, password, rememberMe = true) => {
+  const login = async (email, password) => {
     // Artificial latency for realistic async feel
     await new Promise((res) => setTimeout(res, 600));
 
@@ -156,7 +156,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     setCurrentUser(userSession);
-    showToast('Registration successful! Welcome to CineMax 🎉', 'success');
+    showToast('Registration successful! Welcome to Leo Nani 🎉', 'success');
     return { success: true, user: userSession };
   };
 

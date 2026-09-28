@@ -418,7 +418,7 @@ export const ForgotPassword = () => {
               <Sparkles size={14} /> SECURITY CENTER
             </span>
             <h1 className="text-5xl font-black text-white mb-4 tracking-tight leading-tight [text-shadow:_0_4px_24px_rgba(0,0,0,0.95)]">
-              CineMax <span className="bg-gradient-to-r from-rose-500 via-rose-300 to-orange-400 bg-clip-text text-transparent">Account Recovery</span>
+              Leo Nani <span className="bg-gradient-to-r from-rose-500 via-rose-300 to-orange-400 bg-clip-text text-transparent">Account Recovery</span>
             </h1>
             <p className="text-sm font-medium text-white/90 leading-relaxed mb-7 [text-shadow:_0_2px_16px_rgba(0,0,0,0.95)]">
               Your security is our top priority. Reset your password securely and return to booking your favorite blockbuster movies!

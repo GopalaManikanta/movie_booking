@@ -79,7 +79,7 @@ export const Register = () => {
     setLoading(false);
 
     if (result.success) {
-      showToast('Account created successfully! Welcome to CineMax.', 'success');
+      showToast('Account created successfully! Welcome to MovieMax.', 'success');
       navigate('/profile');
     } else if (result.error) {
       setErrors((prev) => ({ ...prev, general: result.error }));
@@ -102,7 +102,7 @@ export const Register = () => {
 
           {/* Heading */}
           <h2 className="text-2xl font-black text-slate-900 mb-1 tracking-tight">
-            Join <span className="text-rose-600">CineMax</span> Today
+            Join <span className="text-rose-600">MovieMax</span> Today
           </h2>
           <p className="text-xs font-medium text-slate-500 mb-4">Create your account to unlock instant movie tickets & VIP seats</p>
 
@@ -242,7 +242,7 @@ export const Register = () => {
               className="w-full mt-2 py-3.5 px-6 rounded-full font-extrabold text-sm text-white bg-gradient-to-r from-rose-500 via-rose-400 to-orange-500 hover:from-rose-600 hover:to-orange-600 shadow-lg shadow-rose-500/35 transition-all transform hover:-translate-y-0.5 disabled:opacity-60 cursor-pointer"
               disabled={loading}
             >
-              {loading ? 'Creating Account...' : 'Create CineMax Account'}
+              {loading ? 'Creating Account...' : 'Create Leo Nani Account'}
             </button>
           </form>
 

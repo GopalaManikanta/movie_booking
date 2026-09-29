@@ -99,9 +99,9 @@ export const Login = () => {
   };
 
   return (
-    <div className="relative w-screen h-screen flex bg-black overflow-hidden font-sans">
+    <div className="relative min-h-screen w-full flex bg-black overflow-x-hidden font-sans">
       
-      <div className="flex w-screen h-screen overflow-hidden relative bg-black border-none">
+      <div className="flex min-h-screen w-full relative bg-black border-none">
         
         {/* LEFT FORM PANEL */}
         <div className="w-full md:w-[40vw] h-screen px-6 lg:px-16 py-10 flex flex-col items-center justify-center text-center z-10 bg-black border-none outline-none shadow-none overflow-y-auto no-scrollbar">

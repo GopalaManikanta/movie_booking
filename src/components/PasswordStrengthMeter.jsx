@@ -24,17 +24,17 @@ export const PasswordStrengthMeter = ({ password }) => {
   if (!password) return null;
 
   return (
-    <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 my-1 w-full max-w-[360px]">
-      <div className="h-1.5 bg-rose-200 rounded-full overflow-hidden mb-2">
+    <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 my-1 w-full max-w-[360px]">
+      <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-2">
         <div className={`h-full transition-all duration-300 ${strength.width} ${strength.bgClass}`} />
       </div>
       <div className="flex justify-between text-xs mb-2">
-        <span className="text-slate-500 font-medium">Password Strength:</span>
+        <span className="text-slate-400 font-medium">Password Strength:</span>
         <span className={`font-bold ${strength.textClass}`}>{strength.text}</span>
       </div>
       <ul className="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] p-0 m-0 list-none">
         {checks.map((item, idx) => (
-          <li key={idx} className={`flex items-center gap-1.5 ${item.valid ? 'text-emerald-600 font-semibold' : 'text-slate-400'}`}>
+          <li key={idx} className={`flex items-center gap-1.5 ${item.valid ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
             {item.valid ? <Check size={13} className="shrink-0" /> : <X size={13} className="shrink-0" />}
             <span>{item.label}</span>
           </li>

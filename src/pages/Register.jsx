@@ -87,27 +87,27 @@ export const Register = () => {
   };
 
   return (
-    <div className="relative w-screen h-screen flex bg-rose-50 overflow-hidden font-sans">
-      {/* Background Decorative Red Bubbles */}
-      <div className="absolute top-[6%] left-[5%] w-36 h-36 rounded-full border-2 border-rose-500/20 pointer-events-none"></div>
-      <div className="absolute bottom-[10%] left-[8%] w-16 h-16 rounded-full border-2 border-rose-500/20 pointer-events-none"></div>
+    <div className="relative min-h-screen w-full flex bg-black overflow-x-hidden font-sans text-slate-100">
+      {/* Background Decorative Red Glows */}
+      <div className="absolute top-[6%] left-[5%] w-48 h-48 rounded-full border border-rose-500/10 bg-rose-500/5 blur-xl pointer-events-none"></div>
+      <div className="absolute bottom-[10%] left-[8%] w-32 h-32 rounded-full border border-rose-500/10 bg-rose-500/5 blur-lg pointer-events-none"></div>
 
-      <div className="flex w-screen h-screen overflow-hidden relative bg-white">
+      <div className="flex min-h-screen w-full relative bg-black">
         {/* LEFT FORM PANEL */}
-        <div className="w-full md:w-[50vw] h-screen px-6 md:px-20 py-8 flex flex-col items-center justify-center text-center z-10 bg-white border-none overflow-y-auto no-scrollbar">
+        <div className="w-full md:w-[50vw] h-screen px-6 md:px-20 py-8 flex flex-col items-center justify-center text-center z-10 bg-black border-none overflow-y-auto no-scrollbar">
           {/* Top Film Reel Ring Icon */}
-          <div className="w-12 h-12 rounded-full border-[3.5px] border-rose-500 bg-rose-100 flex items-center justify-center text-rose-500 mb-3 shadow-lg shadow-rose-500/20">
+          <div className="w-12 h-12 rounded-full border border-rose-500/40 bg-rose-950/40 flex items-center justify-center text-rose-500 mb-3 shadow-lg shadow-rose-950/50">
             <Film size={22} />
           </div>
 
           {/* Heading */}
-          <h2 className="text-2xl font-black text-slate-900 mb-1 tracking-tight">
-            Join <span className="text-rose-600">MovieMax</span> Today
+          <h2 className="text-2xl font-black text-white mb-1 tracking-tight">
+            Join <span className="text-rose-500">MovieMax</span> Today
           </h2>
-          <p className="text-xs font-medium text-slate-500 mb-4">Create your account to unlock instant movie tickets & VIP seats</p>
+          <p className="text-xs font-medium text-slate-400 mb-4">Create your account to unlock instant movie tickets & VIP seats</p>
 
           {errors.general && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-600 p-3 rounded-xl text-xs font-bold mb-3 w-full max-w-[360px]">
+            <div className="bg-rose-950/80 border border-rose-800/80 text-rose-300 p-3 rounded-xl text-xs font-bold mb-3 w-full max-w-[360px]">
               {errors.general}
             </div>
           )}
@@ -115,8 +115,8 @@ export const Register = () => {
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full max-w-[360px] text-left" noValidate>
             {/* Full Name */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="name" className="text-xs font-bold text-slate-700">Full Name:</label>
-              <div className={`relative flex items-center bg-white border ${errors.name ? 'border-rose-500 ring-4 ring-rose-500/20' : 'border-slate-300 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
+              <label htmlFor="name" className="text-xs font-bold text-slate-300">Full Name:</label>
+              <div className={`relative flex items-center bg-zinc-900 border ${errors.name ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-zinc-800 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
                 <User className="absolute left-4 text-rose-500 shrink-0" size={18} />
                 <input
                   id="name"
@@ -125,16 +125,16 @@ export const Register = () => {
                   placeholder="e.g. Manikanta"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full bg-transparent py-2.5 pl-12 pr-4 text-slate-900 text-sm font-medium outline-none placeholder:text-slate-400"
+                  className="w-full bg-transparent py-2.5 pl-12 pr-4 text-white text-sm font-medium outline-none placeholder:text-zinc-500"
                 />
               </div>
-              {errors.name && <span className="text-xs font-semibold text-rose-500">{errors.name}</span>}
+              {errors.name && <span className="text-xs font-semibold text-rose-400">{errors.name}</span>}
             </div>
 
             {/* Email Address */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="text-xs font-bold text-slate-700">Email Address:</label>
-              <div className={`relative flex items-center bg-white border ${errors.email ? 'border-rose-500 ring-4 ring-rose-500/20' : 'border-slate-300 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
+              <label htmlFor="email" className="text-xs font-bold text-slate-300">Email Address:</label>
+              <div className={`relative flex items-center bg-zinc-900 border ${errors.email ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-zinc-800 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
                 <Mail className="absolute left-4 text-rose-500 shrink-0" size={18} />
                 <input
                   id="email"
@@ -143,16 +143,16 @@ export const Register = () => {
                   placeholder="cinema@movietickets.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-transparent py-2.5 pl-12 pr-4 text-slate-900 text-sm font-medium outline-none placeholder:text-slate-400"
+                  className="w-full bg-transparent py-2.5 pl-12 pr-4 text-white text-sm font-medium outline-none placeholder:text-zinc-500"
                 />
               </div>
-              {errors.email && <span className="text-xs font-semibold text-rose-500">{errors.email}</span>}
+              {errors.email && <span className="text-xs font-semibold text-rose-400">{errors.email}</span>}
             </div>
 
             {/* Phone Number */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="phone" className="text-xs font-bold text-slate-700">Phone Number (Optional):</label>
-              <div className="relative flex items-center bg-white border border-slate-300 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20 rounded-xl transition-all shadow-sm">
+              <label htmlFor="phone" className="text-xs font-bold text-slate-300">Phone Number (Optional):</label>
+              <div className="relative flex items-center bg-zinc-900 border border-zinc-800 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20 rounded-xl transition-all shadow-sm">
                 <Phone className="absolute left-4 text-rose-500 shrink-0" size={18} />
                 <input
                   id="phone"
@@ -161,15 +161,15 @@ export const Register = () => {
                   placeholder="+91 98765 43210"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full bg-transparent py-2.5 pl-12 pr-4 text-slate-900 text-sm font-medium outline-none placeholder:text-slate-400"
+                  className="w-full bg-transparent py-2.5 pl-12 pr-4 text-white text-sm font-medium outline-none placeholder:text-zinc-500"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="password" className="text-xs font-bold text-slate-700">Password:</label>
-              <div className={`relative flex items-center bg-white border ${errors.password ? 'border-rose-500 ring-4 ring-rose-500/20' : 'border-slate-300 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
+              <label htmlFor="password" className="text-xs font-bold text-slate-300">Password:</label>
+              <div className={`relative flex items-center bg-zinc-900 border ${errors.password ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-zinc-800 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
                 <Lock className="absolute left-4 text-rose-500 shrink-0" size={18} />
                 <input
                   id="password"
@@ -178,24 +178,24 @@ export const Register = () => {
                   placeholder="Minimum 8 characters"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full bg-transparent py-2.5 pl-12 pr-12 text-slate-900 text-sm font-medium outline-none placeholder:text-slate-400"
+                  className="w-full bg-transparent py-2.5 pl-12 pr-12 text-white text-sm font-medium outline-none placeholder:text-zinc-500"
                 />
                 <button
                   type="button"
-                  className="absolute right-3 text-rose-500 hover:text-rose-600 p-1 flex items-center"
+                  className="absolute right-3 text-rose-400 hover:text-rose-300 p-1 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {errors.password && <span className="text-xs font-semibold text-rose-500">{errors.password}</span>}
+              {errors.password && <span className="text-xs font-semibold text-rose-400">{errors.password}</span>}
             </div>
 
             {/* Confirm Password */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="confirmPassword" className="text-xs font-bold text-slate-700">Confirm Password:</label>
-              <div className={`relative flex items-center bg-white border ${errors.confirmPassword ? 'border-rose-500 ring-4 ring-rose-500/20' : 'border-slate-300 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
+              <label htmlFor="confirmPassword" className="text-xs font-bold text-slate-300">Confirm Password:</label>
+              <div className={`relative flex items-center bg-zinc-900 border ${errors.confirmPassword ? 'border-rose-500 ring-2 ring-rose-500/20' : 'border-zinc-800 focus-within:border-rose-500 focus-within:ring-2 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
                 <ShieldCheck className="absolute left-4 text-rose-500 shrink-0" size={18} />
                 <input
                   id="confirmPassword"
@@ -204,18 +204,18 @@ export const Register = () => {
                   placeholder="Re-enter password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full bg-transparent py-2.5 pl-12 pr-12 text-slate-900 text-sm font-medium outline-none placeholder:text-slate-400"
+                  className="w-full bg-transparent py-2.5 pl-12 pr-12 text-white text-sm font-medium outline-none placeholder:text-zinc-500"
                 />
                 <button
                   type="button"
-                  className="absolute right-3 text-rose-500 hover:text-rose-600 p-1 flex items-center"
+                  className="absolute right-3 text-rose-400 hover:text-rose-300 p-1 flex items-center"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   tabIndex={-1}
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {errors.confirmPassword && <span className="text-xs font-semibold text-rose-500">{errors.confirmPassword}</span>}
+              {errors.confirmPassword && <span className="text-xs font-semibold text-rose-400">{errors.confirmPassword}</span>}
             </div>
 
             {/* Live Password Strength Bar */}
@@ -223,7 +223,7 @@ export const Register = () => {
 
             {/* Terms Checkbox */}
             <div className="mt-1">
-              <label className="flex items-center gap-2 text-slate-600 font-semibold text-xs cursor-pointer">
+              <label className="flex items-center gap-2 text-slate-400 font-semibold text-xs cursor-pointer">
                 <input
                   type="checkbox"
                   name="agreeTerms"
@@ -231,32 +231,32 @@ export const Register = () => {
                   onChange={handleChange}
                   className="accent-rose-500 w-4 h-4 cursor-pointer"
                 />
-                I agree to the <strong className="text-slate-800">Terms & Privacy Policy</strong>
+                I agree to the <strong className="text-slate-200">Terms & Privacy Policy</strong>
               </label>
-              {errors.agreeTerms && <span className="text-xs font-semibold text-rose-500 block mt-1">{errors.agreeTerms}</span>}
+              {errors.agreeTerms && <span className="text-xs font-semibold text-rose-400 block mt-1">{errors.agreeTerms}</span>}
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full mt-2 py-3.5 px-6 rounded-full font-extrabold text-sm text-white bg-gradient-to-r from-rose-500 via-rose-400 to-orange-500 hover:from-rose-600 hover:to-orange-600 shadow-lg shadow-rose-500/35 transition-all transform hover:-translate-y-0.5 disabled:opacity-60 cursor-pointer"
+              className="w-full mt-2 py-3.5 px-6 rounded-full font-extrabold text-sm text-white bg-gradient-to-r from-rose-600 via-rose-500 to-orange-500 hover:from-rose-500 hover:to-orange-400 shadow-lg shadow-rose-950/60 transition-all transform hover:-translate-y-0.5 disabled:opacity-60 cursor-pointer"
               disabled={loading}
             >
-              {loading ? 'Creating Account...' : 'Create Leo Nani Account'}
+              {loading ? 'Creating Account...' : 'Create MovieMax Account'}
             </button>
           </form>
 
           {/* Footer Link */}
-          <div className="mt-4 text-xs text-slate-500 text-center w-full max-w-[360px]">
+          <div className="mt-4 text-xs text-slate-400 text-center w-full max-w-[360px]">
             Already have an account?{' '}
-            <Link to="/login" className="text-rose-600 font-extrabold hover:underline">
+            <Link to="/login" className="text-rose-400 font-extrabold hover:underline">
               Sign In
             </Link>
           </div>
         </div>
 
         {/* RIGHT GIANT CURVED CIRCLE OVERLAY PANEL */}
-        <div className="hidden md:flex absolute -top-[5vh] -right-[5vw] w-[62vw] h-[110vh] rounded-l-[500px] px-24 py-16 flex-col justify-center text-white z-20 shadow-[-20px_0_50px_rgba(0,0,0,0.35)] bg-[url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=2000&q=100')] bg-center bg-cover bg-no-repeat">
+        <div className="hidden md:flex absolute -top-[5vh] -right-[5vw] w-[62vw] h-[110vh] rounded-l-[500px] px-24 py-16 flex-col justify-center text-white z-20 shadow-[-20px_0_50px_rgba(0,0,0,0.85)] bg-[url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=2000&q=100')] bg-center bg-cover bg-no-repeat border-l-[3px] border-rose-500/60">
           <div className="max-w-[440px] text-left">
             <span className="inline-flex items-center gap-1.5 bg-rose-500/25 border border-rose-500/80 text-white px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wider uppercase mb-4 shadow-lg shadow-rose-500/40 backdrop-blur-md">
               <Sparkles size={14} /> VIP MEMBER ACCESS

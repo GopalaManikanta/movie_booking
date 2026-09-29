@@ -8,21 +8,23 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
+import MovieCatalog from './pages/MovieCatalog';
+import MovieDetails from './pages/MovieDetails';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="w-screen h-screen flex flex-col bg-slate-950 overflow-hidden">
+        <div className="min-h-screen w-full flex flex-col bg-black text-white overflow-x-hidden">
           <ToastNotification />
-          <main className="w-screen h-screen flex m-0 p-0 overflow-hidden">
+          <main className="flex-1 w-full m-0 p-0 overflow-x-hidden">
             <Routes>
               {/* Public Auth Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
 
-              {/* Protected Cinema Dashboard Routes */}
+              {/* Protected Cinema Dashboard & Movie Routes */}
               <Route
                 path="/profile"
                 element={
@@ -36,6 +38,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/movies"
+                element={
+                  <ProtectedRoute>
+                    <MovieCatalog />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/movie/:id"
+                element={
+                  <ProtectedRoute>
+                    <MovieDetails />
                   </ProtectedRoute>
                 }
               />

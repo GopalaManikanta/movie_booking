@@ -156,7 +156,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     setCurrentUser(userSession);
-    showToast('Registration successful! Welcome to Leo Nani 🎉', 'success');
+    showToast('Registration successful! Welcome to MovieMax 🎉', 'success');
     return { success: true, user: userSession };
   };
 

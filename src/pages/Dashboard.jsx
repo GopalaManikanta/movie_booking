@@ -1,103 +1,80 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Film, Building2, Ticket, Clock, Calendar, DollarSign, 
-  Clock3, Sparkles, LogOut, Rocket, Search 
+  Clock3, Sparkles, Rocket, Search, ArrowRight, Clapperboard
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 export const Dashboard = () => {
-  const { currentUser, logout } = useAuth();
-  const navigate = useNavigate();
-
-  // Real-Time Clock State
-  const [time, setTime] = useState(new Date());
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   // Revenue Analytics Period State
   const [revenuePeriod, setRevenuePeriod] = useState('daily');
   const [searchTerm, setSearchTerm] = useState('');
 
   // All KPI Statistics & Data Counts
-  const totalMovies = 0;
-  const totalTheatres = 0;
+  const totalMovies = 15; // TMDB Catalog Integrated
+  const totalTheatres = 8;
   const totalBookings = 0;
   const availableShows = 0;
   const todaysBookingsCount = 0;
-  const upcomingMoviesCount = 0;
+  const upcomingMoviesCount = 5;
   const totalRevenue = 0;
   const filteredRevenueByPeriod = 0;
 
   // Recent Bookings Stream (Empty Array)
   const recentBookings = [];
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
-    <div className="w-screen h-screen bg-black text-slate-100 flex flex-col font-sans overflow-y-auto no-scrollbar">
+    <div className="min-h-screen w-full bg-black text-slate-100 flex flex-col font-sans overflow-x-hidden">
       
-      {/* TOP HEADER - SLEEK BLACK THEME */}
-      <header className="sticky top-0 z-40 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800/80 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg shadow-black/50">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-full border-[3px] border-rose-500 bg-rose-950/50 flex items-center justify-center text-rose-500 shadow-md shadow-rose-500/20">
-            <Film size={22} />
-          </div>
-          <div>
-            <h1 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-              MovieMax <span className="text-rose-500">Operations Hub</span>
-            </h1>
-            <p className="text-xs text-slate-400 font-medium">Real-Time Ticket Management & Cinema Operations System</p>
-          </div>
-        </div>
-
-        {/* User Session & Real-Time Clock */}
-        <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-rose-400 px-3.5 py-1.5 rounded-full text-xs font-bold">
-            <Clock size={14} className="text-rose-500 animate-pulse" />
-            <span>{time.toLocaleTimeString()} • {time.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-          </div>
-
-          <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-3.5 py-1.5 rounded-full">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 flex items-center justify-center font-bold text-xs text-white">
-              {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'M'}
-            </div>
-            <span className="text-xs font-bold text-slate-200 hidden sm:inline">{currentUser?.name || 'Manager'}</span>
-            <button
-              onClick={handleLogout}
-              className="text-rose-400 hover:text-rose-300 p-1 ml-1 transition-colors cursor-pointer"
-              title="Logout Session"
-            >
-              <LogOut size={16} />
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* TOP HEADER NAVIGATION */}
+      <Navbar />
 
       {/* DASHBOARD MAIN CONTENT */}
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
 
-        {/* 1. KEY PERFORMANCE INDICATOR CARDS (BLACK THEME WITH DARK ZINC CARDS) */}
+        {/* BROWSE MOVIES BANNER CTA */}
+        <div className="bg-gradient-to-r from-rose-950/80 via-zinc-900 to-zinc-900 border border-rose-500/40 p-6 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl shadow-rose-950/20">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-950/80 shrink-0">
+              <Clapperboard size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-white tracking-tight">
+                TMDB Live Movie Catalog Integrated
+              </h2>
+              <p className="text-xs text-slate-300 font-medium mt-0.5">
+                Explore real-time movies, filter by genre, language & rating, view HD posters, and watch official trailers!
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/movies"
+            className="px-6 py-3 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs flex items-center gap-2 shadow-lg shadow-rose-950/80 transition-all cursor-pointer shrink-0"
+          >
+            <span>Explore Movies Catalog</span>
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        {/* 1. KEY PERFORMANCE INDICATOR CARDS */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
           
           {/* Card 1: Total Movies */}
-          <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-lg shadow-black/40 hover:border-zinc-700 transition-all">
+          <Link to="/movies" className="bg-zinc-900/90 border border-zinc-800 hover:border-rose-500/60 rounded-2xl p-4 flex flex-col justify-between shadow-lg shadow-black/40 transition-all group">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Movies</span>
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider group-hover:text-rose-400">Total Movies</span>
               <div className="w-8 h-8 rounded-full bg-rose-950/60 text-rose-500 flex items-center justify-center border border-rose-900/40">
                 <Film size={18} />
               </div>
             </div>
             <div>
               <div className="text-3xl font-black text-white">{totalMovies}</div>
-              <span className="text-[11px] text-slate-400 font-semibold mt-1 block">Active Catalog</span>
+              <span className="text-[11px] text-rose-400 font-bold mt-1 block flex items-center gap-1">
+                TMDB Live Catalog <ArrowRight size={10} />
+              </span>
             </div>
-          </div>
+          </Link>
 
           {/* Card 2: Total Theatres */}
           <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between shadow-lg shadow-black/40 hover:border-zinc-700 transition-all">
@@ -185,7 +162,7 @@ export const Dashboard = () => {
 
         </div>
 
-        {/* 2. REVENUE SUMMARY (DUMMY DATA) & QUICK ACTION CARDS */}
+        {/* 2. REVENUE SUMMARY & QUICK ACTION CARDS */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           {/* REVENUE SUMMARY CARD */}
@@ -247,21 +224,21 @@ export const Dashboard = () => {
               <p className="text-xs text-slate-400 font-medium mb-5">System status & active operations view</p>
 
               <div className="space-y-3">
+                <Link to="/movies" className="w-full bg-zinc-950 border border-zinc-800 hover:border-rose-500/60 p-3.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm transition-all group">
+                  <span className="flex items-center gap-2.5 text-slate-200 group-hover:text-rose-400">
+                    <Clapperboard size={18} className="text-rose-500" /> Movie Catalog (TMDB API)
+                  </span>
+                  <span className="bg-rose-950/80 text-rose-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-rose-800/60 flex items-center gap-1">
+                    {totalMovies} Movies <ArrowRight size={10} />
+                  </span>
+                </Link>
+
                 <div className="w-full bg-zinc-950 border border-zinc-800 p-3.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm">
                   <span className="flex items-center gap-2.5 text-slate-200">
                     <Ticket size={18} className="text-rose-500" /> Ticket Booking Counter
                   </span>
                   <span className="bg-rose-950/80 text-rose-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-rose-800/60">
                     0 Bookings
-                  </span>
-                </div>
-
-                <div className="w-full bg-zinc-950 border border-zinc-800 p-3.5 rounded-2xl text-xs font-extrabold flex items-center justify-between shadow-sm">
-                  <span className="flex items-center gap-2.5 text-slate-200">
-                    <Film size={18} className="text-rose-500" /> Movie Catalog Sync
-                  </span>
-                  <span className="bg-rose-950/80 text-rose-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-rose-800/60">
-                    0 Movies
                   </span>
                 </div>
 

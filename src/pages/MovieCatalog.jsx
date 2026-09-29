@@ -6,8 +6,11 @@ import {
 import { fetchMovies, GENRE_MAP, LANGUAGE_OPTIONS } from '../services/tmdbService';
 import MovieCard from '../components/MovieCard';
 import Navbar from '../components/Navbar';
+import { useAuth } from '../context/AuthContext';
 
 export const MovieCatalog = () => {
+  const { theme } = useAuth();
+
   // State variables for Filters, Search, Sorting, and Pagination
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +75,9 @@ export const MovieCatalog = () => {
   };
 
   return (
-    <div id="catalog-top" className="min-h-screen w-full bg-black text-slate-100 flex flex-col font-sans overflow-x-hidden">
+    <div id="catalog-top" className={`min-h-screen w-full flex flex-col font-sans overflow-x-hidden transition-colors duration-300 ${
+      theme === 'dark' ? 'bg-black text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
       
       {/* Top Navbar */}
       <Navbar />
@@ -81,34 +86,44 @@ export const MovieCatalog = () => {
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
         
         {/* HERO TITLE & ENGINE STATUS BANNER */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-zinc-900/90 border border-zinc-800 p-6 rounded-3xl shadow-xl shadow-black/50">
+        <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-3xl border transition-colors ${
+          theme === 'dark'
+            ? 'bg-zinc-900/90 border-zinc-800 shadow-xl shadow-black/50 text-white'
+            : 'bg-white border-slate-200 shadow-xl shadow-slate-200/50 text-slate-900'
+        }`}>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="bg-rose-500/20 text-rose-400 border border-rose-500/40 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles size={12} /> TMDB Real-Time Catalog
+              <span className="bg-rose-500/20 text-rose-500 border border-rose-500/40 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles size={12} /> TMDB Live Movie Catalog
               </span>
               <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border flex items-center gap-1 ${isLiveApi ? 'bg-emerald-950/80 text-emerald-400 border-emerald-800' : 'bg-amber-950/80 text-amber-400 border-amber-800'}`}>
                 <CheckCircle2 size={11} /> {isLiveApi ? 'Live TMDB API Engine' : 'TMDB Resilient Engine'}
               </span>
             </div>
-            <h1 className="text-3xl font-black text-white tracking-tight">
+            <h1 className={`text-3xl font-black tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
               Explore <span className="bg-gradient-to-r from-rose-500 via-rose-300 to-orange-400 bg-clip-text text-transparent">Blockbuster Movies</span>
             </h1>
-            <p className="text-xs text-slate-400 font-medium mt-1">
+            <p className={`text-xs font-medium mt-1 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
               Filter by genre, language, rating, and release date with live trailer buttons & detailed movie view
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="bg-zinc-950 border border-zinc-800 px-4 py-2 rounded-2xl text-right">
-              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Total Movies Found</span>
+            <div className={`border px-4 py-2 rounded-2xl text-right ${
+              theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-slate-100 border-slate-200'
+            }`}>
+              <span className={`text-[10px] font-extrabold uppercase tracking-wider block ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>Total Movies Found</span>
               <span className="text-xl font-black text-rose-500">{totalResults}</span>
             </div>
           </div>
         </div>
 
         {/* SEARCH & FILTERS BAR */}
-        <div className="bg-zinc-900/90 border border-zinc-800 p-5 rounded-3xl shadow-xl shadow-black/50 space-y-4">
+        <div className={`p-5 rounded-3xl border space-y-4 transition-colors ${
+          theme === 'dark'
+            ? 'bg-zinc-900/90 border-zinc-800 shadow-xl shadow-black/50'
+            : 'bg-white border-slate-200 shadow-xl shadow-slate-200/50'
+        }`}>
           
           {/* Top Row: Live Search Input */}
           <div className="relative w-full">
@@ -121,7 +136,11 @@ export const MovieCatalog = () => {
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl pl-12 pr-4 py-3 text-sm font-semibold text-white placeholder:text-zinc-500 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all shadow-inner"
+              className={`w-full border rounded-2xl pl-12 pr-4 py-3 text-sm font-semibold outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all shadow-inner ${
+                theme === 'dark'
+                  ? 'bg-zinc-950 border-zinc-800 text-white placeholder:text-zinc-500'
+                  : 'bg-slate-100 border-slate-200 text-slate-900 placeholder:text-slate-400'
+              }`}
             />
             {searchQuery && (
               <button
@@ -138,7 +157,9 @@ export const MovieCatalog = () => {
             
             {/* Filter 1: Genre */}
             <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+              <label className={`text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
+                theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+              }`}>
                 <Filter size={12} className="text-rose-500" /> Genre:
               </label>
               <select
@@ -147,7 +168,9 @@ export const MovieCatalog = () => {
                   setSelectedGenre(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-extrabold text-slate-200 outline-none focus:border-rose-500 cursor-pointer"
+                className={`w-full border rounded-xl px-3 py-2 text-xs font-extrabold outline-none focus:border-rose-500 cursor-pointer ${
+                  theme === 'dark' ? 'bg-zinc-950 border-zinc-800 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-800'
+                }`}
               >
                 <option value="all">All Genres</option>
                 {Object.entries(GENRE_MAP).map(([id, name]) => (
@@ -160,7 +183,9 @@ export const MovieCatalog = () => {
 
             {/* Filter 2: Language */}
             <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+              <label className={`text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
+                theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+              }`}>
                 <SlidersHorizontal size={12} className="text-rose-500" /> Language:
               </label>
               <select
@@ -169,7 +194,9 @@ export const MovieCatalog = () => {
                   setSelectedLanguage(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-extrabold text-slate-200 outline-none focus:border-rose-500 cursor-pointer"
+                className={`w-full border rounded-xl px-3 py-2 text-xs font-extrabold outline-none focus:border-rose-500 cursor-pointer ${
+                  theme === 'dark' ? 'bg-zinc-950 border-zinc-800 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-800'
+                }`}
               >
                 {LANGUAGE_OPTIONS.map((lang) => (
                   <option key={lang.code} value={lang.code}>
@@ -181,7 +208,9 @@ export const MovieCatalog = () => {
 
             {/* Filter 3: Rating */}
             <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+              <label className={`text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
+                theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+              }`}>
                 <Sparkles size={12} className="text-rose-500" /> Minimum Rating:
               </label>
               <select
@@ -190,7 +219,9 @@ export const MovieCatalog = () => {
                   setSelectedRating(e.target.value);
                   setPage(1);
                 }}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-extrabold text-slate-200 outline-none focus:border-rose-500 cursor-pointer"
+                className={`w-full border rounded-xl px-3 py-2 text-xs font-extrabold outline-none focus:border-rose-500 cursor-pointer ${
+                  theme === 'dark' ? 'bg-zinc-950 border-zinc-800 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-800'
+                }`}
               >
                 <option value="all">All Ratings</option>
                 <option value="8.5">⭐ 8.5+ Top Rated</option>
@@ -202,13 +233,17 @@ export const MovieCatalog = () => {
 
             {/* Filter 4: Sort Option */}
             <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+              <label className={`text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
+                theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+              }`}>
                 <ArrowUpDown size={12} className="text-rose-500" /> Sort By:
               </label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-extrabold text-slate-200 outline-none focus:border-rose-500 cursor-pointer"
+                className={`w-full border rounded-xl px-3 py-2 text-xs font-extrabold outline-none focus:border-rose-500 cursor-pointer ${
+                  theme === 'dark' ? 'bg-zinc-950 border-zinc-800 text-slate-200' : 'bg-slate-100 border-slate-200 text-slate-800'
+                }`}
               >
                 <option value="release_date_desc">Release Date (Newest)</option>
                 <option value="release_date_asc">Release Date (Oldest)</option>
@@ -222,7 +257,11 @@ export const MovieCatalog = () => {
             <div className="flex flex-col justify-end">
               <button
                 onClick={handleResetFilters}
-                className="w-full py-2 px-3 rounded-xl bg-zinc-950 hover:bg-rose-950/80 border border-zinc-800 hover:border-rose-600/80 text-rose-400 hover:text-rose-300 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer h-[34px]"
+                className={`w-full py-2 px-3 rounded-xl border text-rose-500 hover:text-rose-600 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer h-[34px] ${
+                  theme === 'dark'
+                    ? 'bg-zinc-950 hover:bg-rose-950/80 border-zinc-800 hover:border-rose-600/80'
+                    : 'bg-slate-100 hover:bg-rose-50 border-slate-200 hover:border-rose-300'
+                }`}
               >
                 <RotateCcw size={13} />
                 <span>Reset Filters</span>
@@ -235,9 +274,11 @@ export const MovieCatalog = () => {
 
         {/* ERROR HANDLER DISPLAY */}
         {error && (
-          <div className="bg-rose-950/80 border border-rose-800 p-4 rounded-2xl flex items-center justify-between gap-4 text-rose-300">
+          <div className={`border p-4 rounded-2xl flex items-center justify-between gap-4 ${
+            theme === 'dark' ? 'bg-rose-950/80 border-rose-800 text-rose-300' : 'bg-rose-50 border-rose-200 text-rose-700'
+          }`}>
             <div className="flex items-center gap-3">
-              <AlertCircle size={20} className="shrink-0 text-rose-400" />
+              <AlertCircle size={20} className="shrink-0 text-rose-500" />
               <p className="text-xs font-bold">{error}</p>
             </div>
             <button
@@ -253,11 +294,13 @@ export const MovieCatalog = () => {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, idx) => (
-              <div key={idx} className="bg-zinc-900 border border-zinc-800 rounded-3xl p-4 animate-pulse space-y-3">
-                <div className="w-full aspect-[2/3] bg-zinc-800 rounded-2xl"></div>
-                <div className="h-4 bg-zinc-800 rounded-md w-3/4"></div>
-                <div className="h-3 bg-zinc-800 rounded-md w-1/2"></div>
-                <div className="h-8 bg-zinc-800 rounded-xl w-full"></div>
+              <div key={idx} className={`border rounded-3xl p-4 animate-pulse space-y-3 ${
+                theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'
+              }`}>
+                <div className={`w-full aspect-[2/3] rounded-2xl ${theme === 'dark' ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
+                <div className={`h-4 rounded-md w-3/4 ${theme === 'dark' ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
+                <div className={`h-3 rounded-md w-1/2 ${theme === 'dark' ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
+                <div className={`h-8 rounded-xl w-full ${theme === 'dark' ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
               </div>
             ))}
           </div>
@@ -271,12 +314,16 @@ export const MovieCatalog = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-zinc-900/90 border border-dashed border-zinc-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-3">
-            <div className="w-16 h-16 rounded-full bg-zinc-950 border border-zinc-800 flex items-center justify-center text-slate-500">
+          <div className={`border border-dashed rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-3 ${
+            theme === 'dark' ? 'bg-zinc-900/90 border-zinc-800' : 'bg-white border-slate-300'
+          }`}>
+            <div className={`w-16 h-16 rounded-full border flex items-center justify-center ${
+              theme === 'dark' ? 'bg-zinc-950 border-zinc-800 text-slate-500' : 'bg-slate-100 border-slate-200 text-slate-400'
+            }`}>
               <Clapperboard size={32} />
             </div>
-            <h3 className="text-lg font-black text-white">No Movies Match Your Criteria</h3>
-            <p className="text-xs text-slate-400 font-medium max-w-md">
+            <h3 className={`text-lg font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>No Movies Match Your Criteria</h3>
+            <p className={`text-xs font-medium max-w-md ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
               Try adjusting your search query, changing the genre or language filter, or resetting all filters.
             </p>
             <button
@@ -290,14 +337,20 @@ export const MovieCatalog = () => {
 
         {/* PAGINATION CONTROLS */}
         {!loading && totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between border-t border-zinc-800/80 pt-6 gap-4">
+          <div className={`flex flex-col sm:flex-row items-center justify-between border-t pt-6 gap-4 ${
+            theme === 'dark' ? 'border-zinc-800/80' : 'border-slate-200'
+          }`}>
             <button
               onClick={() => {
                 setPage((prev) => Math.max(prev - 1, 1));
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               disabled={page === 1}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              className={`w-full sm:w-auto px-5 py-2.5 rounded-full border font-extrabold text-xs flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer ${
+                theme === 'dark'
+                  ? 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-white'
+                  : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-800 shadow-sm'
+              }`}
             >
               <ChevronLeft size={16} /> Previous Page
             </button>
@@ -313,7 +366,9 @@ export const MovieCatalog = () => {
                   className={`w-9 h-9 rounded-full text-xs font-black transition-all cursor-pointer ${
                     page === pageNum
                       ? 'bg-rose-600 text-white shadow-lg shadow-rose-950/60 scale-105'
-                      : 'bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-slate-300 hover:text-white'
+                      : theme === 'dark'
+                      ? 'bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-slate-300 hover:text-white'
+                      : 'bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-900 shadow-sm'
                   }`}
                 >
                   {pageNum}
@@ -327,7 +382,11 @@ export const MovieCatalog = () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               disabled={page >= totalPages}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white font-extrabold text-xs flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              className={`w-full sm:w-auto px-5 py-2.5 rounded-full border font-extrabold text-xs flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer ${
+                theme === 'dark'
+                  ? 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-white'
+                  : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-800 shadow-sm'
+              }`}
             >
               Next Page <ChevronRight size={16} />
             </button>

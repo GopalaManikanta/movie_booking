@@ -10,7 +10,7 @@ const HERO_IMAGES = [
 ];
 
 export const Login = () => {
-  const { login, showToast } = useAuth();
+  const { login, showToast, theme } = useAuth();
   const navigate = useNavigate();
 
   // 30-Second Image Slider Carousel State for 2 Images
@@ -83,7 +83,7 @@ export const Login = () => {
 
   const handleDemoFill = () => {
     setFormData({
-      email: 'rahul@movie.com',
+      email: 'manikanta@movie.com',
       password: 'Password123!',
       rememberMe: true,
     });
@@ -99,23 +99,27 @@ export const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex bg-black overflow-x-hidden font-sans">
+    <div className={`relative min-h-screen w-full flex overflow-x-hidden font-sans transition-colors duration-300 ${
+      theme === 'dark' ? 'bg-black text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
       
-      <div className="flex min-h-screen w-full relative bg-black border-none">
+      <div className="flex min-h-screen w-full relative border-none">
         
         {/* LEFT FORM PANEL */}
-        <div className="w-full md:w-[40vw] h-screen px-6 lg:px-16 py-10 flex flex-col items-center justify-center text-center z-10 bg-black border-none outline-none shadow-none overflow-y-auto no-scrollbar">
+        <div className={`w-full md:w-[40vw] h-screen px-6 lg:px-16 py-10 flex flex-col items-center justify-center text-center z-10 border-none outline-none shadow-none overflow-y-auto no-scrollbar transition-colors ${
+          theme === 'dark' ? 'bg-black' : 'bg-white'
+        }`}>
           {/* Top Film Reel Circle Icon */}
-          <div className="w-13 h-13 rounded-full border-[3.5px] border-rose-500 bg-rose-950/60 flex items-center justify-center text-rose-500 mb-4 shadow-lg shadow-rose-500/30">
+          <div className="w-13 h-13 rounded-full border-[3.5px] border-rose-500 bg-rose-500/10 flex items-center justify-center text-rose-500 mb-4 shadow-lg shadow-rose-500/20">
             <Film size={24} />
           </div>
 
           {/* COLORFUL GRADIENT HEADING FOR "LOG IN / SIGN UP ON MOVIEMAX" */}
           <h2 className="text-2xl md:text-3xl font-black mb-5 tracking-tight">
-            <span className="bg-gradient-to-r from-rose-400 via-orange-400 to-rose-500 bg-clip-text text-transparent drop-shadow-sm">
+            <span className="bg-gradient-to-r from-rose-500 via-orange-500 to-rose-600 bg-clip-text text-transparent drop-shadow-sm">
               Log in / Sign Up On
             </span>{' '}
-            <span className="text-white font-extrabold">
+            <span className={theme === 'dark' ? 'text-white font-extrabold' : 'text-slate-900 font-extrabold'}>
               MovieMax
             </span>
           </h2>
@@ -124,19 +128,29 @@ export const Login = () => {
           <div className="w-full max-w-[360px] mb-4 flex">
             <button
               type="button"
-              className="w-full bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-rose-400 px-4 py-2.5 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md transform hover:-translate-y-0.5 cursor-pointer"
+              className={`w-full border text-rose-500 px-4 py-2.5 rounded-full text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-md transform hover:-translate-y-0.5 cursor-pointer ${
+                theme === 'dark' ? 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800' : 'bg-slate-100 hover:bg-slate-200 border-slate-300'
+              }`}
               onClick={handleDemoFill}
             >
               <Sparkles size={14} className="shrink-0 text-rose-500" />
-              <span>Click to auto-fill: <strong className="text-rose-400 font-bold">rahul@movie.com</strong></span>
+              <span>Click to auto-fill: <strong className="text-rose-500 font-bold">manikanta@movie.com</strong></span>
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-[360px] text-left" noValidate>
             {/* Email Address */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="text-xs font-bold text-slate-300">Email Address:</label>
-              <div className={`relative flex items-center bg-zinc-900 border rounded-xl transition-all shadow-sm ${errors.email ? 'border-rose-500 ring-4 ring-rose-500/20 bg-rose-950/30' : isValidEmail ? 'border-emerald-500 ring-4 ring-emerald-500/15' : 'border-zinc-800 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'}`}>
+              <label htmlFor="email" className={`text-xs font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>Email Address:</label>
+              <div className={`relative flex items-center border rounded-xl transition-all shadow-sm ${
+                errors.email 
+                  ? 'border-rose-500 ring-4 ring-rose-500/20 bg-rose-500/10' 
+                  : isValidEmail 
+                  ? 'border-emerald-500 ring-4 ring-emerald-500/15' 
+                  : theme === 'dark'
+                  ? 'bg-zinc-900 border-zinc-800 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'
+                  : 'bg-slate-50 border-slate-300 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'
+              }`}>
                 <Mail className="absolute left-4 text-rose-500 shrink-0" size={18} />
                 <input
                   id="email"
@@ -145,7 +159,9 @@ export const Login = () => {
                   placeholder="cinema@movietickets.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-transparent py-3 pl-12 pr-4 text-white text-sm font-medium outline-none placeholder:text-slate-500"
+                  className={`w-full bg-transparent py-3 pl-12 pr-4 text-sm font-medium outline-none ${
+                    theme === 'dark' ? 'text-white placeholder:text-slate-500' : 'text-slate-900 placeholder:text-slate-400'
+                  }`}
                 />
                 {isValidEmail && !errors.email && <CheckCircle2 size={18} className="text-emerald-500 mr-3 shrink-0" />}
                 {errors.email && <AlertCircle size={18} className="text-rose-500 mr-3 shrink-0" />}
@@ -159,8 +175,14 @@ export const Login = () => {
 
             {/* Password */}
             <div className="flex flex-col gap-1">
-              <label htmlFor="password" className="text-xs font-bold text-slate-300">Password:</label>
-              <div className={`relative flex items-center bg-zinc-900 border ${errors.password ? 'border-rose-500 ring-4 ring-rose-500/20 bg-rose-950/30' : 'border-zinc-800 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'} rounded-xl transition-all shadow-sm`}>
+              <label htmlFor="password" className={`text-xs font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>Password:</label>
+              <div className={`relative flex items-center border rounded-xl transition-all shadow-sm ${
+                errors.password 
+                  ? 'border-rose-500 ring-4 ring-rose-500/20 bg-rose-500/10' 
+                  : theme === 'dark'
+                  ? 'bg-zinc-900 border-zinc-800 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'
+                  : 'bg-slate-50 border-slate-300 focus-within:border-rose-500 focus-within:ring-4 focus-within:ring-rose-500/20'
+              }`}>
                 <Lock className="absolute left-4 text-rose-500 shrink-0" size={18} />
                 <input
                   id="password"
@@ -169,11 +191,13 @@ export const Login = () => {
                   placeholder="***************"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full bg-transparent py-3 pl-12 pr-12 text-white text-sm font-medium outline-none placeholder:text-slate-500"
+                  className={`w-full bg-transparent py-3 pl-12 pr-12 text-sm font-medium outline-none ${
+                    theme === 'dark' ? 'text-white placeholder:text-slate-500' : 'text-slate-900 placeholder:text-slate-400'
+                  }`}
                 />
                 <button
                   type="button"
-                  className="absolute right-3 text-rose-500 hover:text-rose-400 p-1 flex items-center"
+                  className="absolute right-3 text-rose-500 hover:text-rose-600 p-1 flex items-center cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
@@ -189,7 +213,7 @@ export const Login = () => {
 
             {/* Checkbox & Forgot Password Row */}
             <div className="flex items-center justify-between text-xs mt-1">
-              <label className="flex items-center gap-2 text-slate-300 font-semibold cursor-pointer">
+              <label className={`flex items-center gap-2 font-semibold cursor-pointer ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
                 <input
                   type="checkbox"
                   name="rememberMe"
@@ -200,7 +224,7 @@ export const Login = () => {
                 Remember me
               </label>
 
-              <Link to="/forgot-password" className="text-rose-400 font-bold hover:underline">
+              <Link to="/forgot-password" className="text-rose-500 font-bold hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -223,17 +247,21 @@ export const Login = () => {
 
           {/* Social Connect Icons */}
           <div className="text-center mt-6 w-full max-w-[360px]">
-            <p className="text-xs text-slate-400 mb-3 font-medium">or connect with</p>
+            <p className={`text-xs mb-3 font-medium ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>or connect with</p>
             <div className="flex justify-center gap-4">
               <button
-                className="w-10 h-10 rounded-full border border-zinc-800 bg-zinc-900 text-blue-400 flex items-center justify-center font-extrabold text-lg hover:scale-110 transition-all shadow-sm cursor-pointer"
+                className={`w-10 h-10 rounded-full border text-blue-500 flex items-center justify-center font-extrabold text-lg hover:scale-110 transition-all shadow-sm cursor-pointer ${
+                  theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-slate-100 border-slate-300'
+                }`}
                 onClick={() => handleSocialConnect('Facebook')}
                 title="Connect with Facebook"
               >
                 f
               </button>
               <button
-                className="w-10 h-10 rounded-full border border-zinc-800 bg-zinc-900 text-rose-500 flex items-center justify-center font-extrabold text-lg hover:scale-110 transition-all shadow-sm cursor-pointer"
+                className={`w-10 h-10 rounded-full border text-rose-500 flex items-center justify-center font-extrabold text-lg hover:scale-110 transition-all shadow-sm cursor-pointer ${
+                  theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-slate-100 border-slate-300'
+                }`}
                 onClick={() => handleSocialConnect('Google')}
                 title="Connect with Google"
               >
@@ -243,9 +271,9 @@ export const Login = () => {
           </div>
 
           {/* Footer Link */}
-          <div className="mt-6 text-xs text-slate-400 text-center w-full max-w-[360px]">
+          <div className={`mt-6 text-xs text-center w-full max-w-[360px] ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
             Don't have an account?{' '}
-            <Link to="/register" className="text-rose-400 font-extrabold hover:underline">
+            <Link to="/register" className="text-rose-500 font-extrabold hover:underline">
               Sign up
             </Link>
           </div>

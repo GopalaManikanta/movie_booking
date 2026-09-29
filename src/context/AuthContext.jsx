@@ -14,8 +14,8 @@ export const useAuth = () => {
 const INITIAL_DEMO_USERS = [
   {
     id: 'usr_demo_1',
-    name: 'Rahul Verma',
-    email: 'rahul@movie.com',
+    name: 'Manikanta',
+    email: 'manikanta@movie.com',
     password: 'Password123!',
     phone: '+91 98765 43210',
     joinedDate: '2025-01-15',
@@ -188,15 +188,95 @@ export const AuthProvider = ({ children }) => {
     showToast('You have been logged out safely.', 'info');
   };
 
+  // Dynamic user bookings state starting at [] by default
+  const [userBookings, setUserBookings] = useState(() => {
+    try {
+      const savedBookings = localStorage.getItem('cinemax_user_bookings');
+      return savedBookings ? JSON.parse(savedBookings) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('cinemax_user_bookings', JSON.stringify(userBookings));
+    } catch (e) {
+      console.error('Failed to sync bookings to localStorage:', e);
+    }
+  }, [userBookings]);
+
+  const addBooking = (bookingData) => {
+    const newBooking = {
+      id: 'TKT-' + Math.floor(1000 + Math.random() * 9000),
+      customer: currentUser?.name || bookingData.customer || 'Manikanta',
+      movie: bookingData.movie || 'Deadpool & Wolverine',
+      theater: bookingData.theater || 'AMB Cinemas',
+      seats: bookingData.seats || 'Recliner A-12',
+      amount: bookingData.amount || 350,
+      status: 'Confirmed 🟢',
+      time: 'Just now',
+      timestamp: Date.now(),
+    };
+
+    setUserBookings((prev) => [newBooking, ...prev]);
+    showToast(`🎟️ Ticket Booked Successfully! ID: ${newBooking.id}`, 'success');
+    return newBooking;
+  };
+
+  const clearBookings = () => {
+    setUserBookings([]);
+    showToast('Cleared all bookings state back to 0.', 'info');
+  };
+
+  // Global Theme state (dark vs light)
+  const [theme, setTheme] = useState(() => {
+    try {
+      const savedTheme = localStorage.getItem('cinemax_theme');
+      return savedTheme === 'light' ? 'light' : 'dark';
+    } catch (e) {
+      return 'dark';
+    }
+  });
+
+  // Sync active theme class to document element & localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('cinemax_theme', theme);
+      if (theme === 'light') {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      }
+    } catch (e) {
+      console.error('Failed to sync theme to DOM:', e);
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => {
+      const nextTheme = prev === 'dark' ? 'light' : 'dark';
+      showToast(`Switched to ${nextTheme === 'dark' ? 'Dark 🌙' : 'Light ☀️'} Mode`, 'info');
+      return nextTheme;
+    });
+  };
+
   const value = {
     currentUser,
     usersDb,
+    userBookings,
+    addBooking,
+    clearBookings,
     login,
     register,
     resetPassword,
     logout,
     toast,
     showToast,
+    theme,
+    toggleTheme,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const MovieCard = ({ movie }) => {
-  const { showToast } = useAuth();
+  const { showToast, theme } = useAuth();
   const [imgError, setImgError] = useState(false);
 
   const formatRuntime = (mins) => {
@@ -34,7 +34,11 @@ export const MovieCard = ({ movie }) => {
   };
 
   return (
-    <div className="group relative bg-zinc-900/90 border border-zinc-800 hover:border-rose-500/60 rounded-3xl overflow-hidden shadow-xl shadow-black/50 transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between">
+    <div className={`group relative rounded-3xl overflow-hidden transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between border ${
+      theme === 'dark'
+        ? 'bg-zinc-900/90 border-zinc-800 hover:border-rose-500/60 shadow-xl shadow-black/50 text-slate-100'
+        : 'bg-white border-slate-200 hover:border-rose-500/60 shadow-xl shadow-slate-200/50 text-slate-900'
+    }`}>
       
       {/* Top Image Poster Banner Container */}
       <Link to={`/movie/${movie.id}`} className="relative w-full aspect-[2/3] overflow-hidden bg-zinc-950 block">
@@ -84,7 +88,9 @@ export const MovieCard = ({ movie }) => {
           {movie.genres?.slice(0, 3).map((g, idx) => (
             <span
               key={idx}
-              className="bg-zinc-950 border border-zinc-800 text-slate-300 text-[10px] font-bold px-2.5 py-0.5 rounded-md"
+              className={`text-[10px] font-bold px-2.5 py-0.5 rounded-md border ${
+                theme === 'dark' ? 'bg-zinc-950 border-zinc-800 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+              }`}
             >
               {typeof g === 'object' && g !== null ? (g.name || 'Cinema') : String(g)}
             </span>
@@ -94,22 +100,28 @@ export const MovieCard = ({ movie }) => {
         {/* Movie Title */}
         <div>
           <Link to={`/movie/${movie.id}`} className="hover:underline">
-            <h3 className="text-base font-black text-white group-hover:text-rose-400 transition-colors line-clamp-1 tracking-tight">
+            <h3 className={`text-base font-black group-hover:text-rose-500 transition-colors line-clamp-1 tracking-tight ${
+              theme === 'dark' ? 'text-white' : 'text-slate-900'
+            }`}>
               {movie.title}
             </h3>
           </Link>
-          <p className="text-xs text-slate-400 line-clamp-2 mt-1 font-medium leading-relaxed">
+          <p className={`text-xs line-clamp-2 mt-1 font-medium leading-relaxed ${
+            theme === 'dark' ? 'text-slate-400' : 'text-slate-600'
+          }`}>
             {movie.overview}
           </p>
         </div>
 
         {/* Duration & Release Date */}
-        <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold border-t border-zinc-800/80 pt-2.5 mt-auto">
-          <span className="flex items-center gap-1.5 text-slate-300">
+        <div className={`flex items-center justify-between text-[11px] font-semibold border-t pt-2.5 mt-auto ${
+          theme === 'dark' ? 'border-zinc-800/80 text-slate-400' : 'border-slate-200 text-slate-500'
+        }`}>
+          <span className={`flex items-center gap-1.5 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
             <Clock size={13} className="text-rose-500" />
             {formatRuntime(movie.runtime)}
           </span>
-          <span className="flex items-center gap-1.5 text-slate-400">
+          <span className="flex items-center gap-1.5">
             <Calendar size={13} className="text-rose-500" />
             {movie.release_date}
           </span>
@@ -120,9 +132,13 @@ export const MovieCard = ({ movie }) => {
           <button
             onClick={handleTrailerClick}
             type="button"
-            className="w-full py-2 px-3 rounded-xl bg-zinc-950 hover:bg-rose-950/80 border border-zinc-800 hover:border-rose-600/80 text-rose-400 hover:text-rose-300 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            className={`w-full py-2 px-3 rounded-xl border font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              theme === 'dark'
+                ? 'bg-zinc-950 hover:bg-rose-950/80 border-zinc-800 hover:border-rose-600/80 text-rose-400 hover:text-rose-300'
+                : 'bg-slate-100 hover:bg-rose-50 border-slate-200 hover:border-rose-300 text-rose-600 hover:text-rose-700 shadow-sm'
+            }`}
           >
-            <Play size={13} className="fill-rose-400" />
+            <Play size={13} className="fill-rose-500 text-rose-500" />
             <span>Trailer</span>
           </button>
 

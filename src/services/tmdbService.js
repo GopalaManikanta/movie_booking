@@ -140,7 +140,7 @@ export const fetchMovies = async ({
             : 'https://image.tmdb.org/t/p/w1280/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg',
           vote_average: m.vote_average ? Number(m.vote_average.toFixed(1)) : 7.0,
           vote_count: m.vote_count || 0,
-          release_date: m.release_date || '2024-01-01',
+          release_date: m.release_date || '2024-07-24',
           original_language: m.original_language || 'en',
           runtime: m.runtime || 120 + (m.id % 40),
           genres: m.genres || mapGenreIds(m.genre_ids),
@@ -176,7 +176,129 @@ export const fetchMovies = async ({
   };
 };
 
+
+
+export const UPCOMING_MOVIES_LIST = [
+  {
+    id: 9901,
+    title: 'Avatar: Fire and Ash',
+    original_title: 'Avatar: Fire and Ash',
+    overview: 'Jake Sully and Neytiri encounter a new hostile Na\'vi tribe associated with fire and volcanic ash on Pandora.',
+    poster_path: 'https://image.tmdb.org/t/p/w500/kyeqWdyUXW608qlYkRqosgbbJyK.jpg',
+    backdrop_path: 'https://image.tmdb.org/t/p/w1280/vL5WB9w2RjG578AOjJ19yB1o25v.jpg',
+    vote_average: 9.2,
+    vote_count: 4820,
+    release_date: '2025-12-19',
+    original_language: 'en',
+    runtime: 190,
+    genres: ['Action', 'Sci-Fi', 'Adventure'],
+    cast: ['Sam Worthington', 'Zoe Saldana', 'Sigourney Weaver', 'Oona Chaplin'],
+    isUpcoming: true,
+    tagline: 'Enter the Ash People of Pandora',
+  },
+  {
+    id: 9902,
+    title: 'Moana 2',
+    original_title: 'Moana 2',
+    overview: 'Moana receives an unexpected call from her wayfinding ancestors and voyages to the far seas of Oceania into dangerous, long-lost waters for an adventure unlike anything she has ever faced.',
+    poster_path: 'https://upload.wikimedia.org/wikipedia/en/7/73/Moana_2_poster.jpg',
+    backdrop_path: 'https://image.tmdb.org/t/p/w1280/o8XSR1SONnjcsv84NRu6Mwsl5io.jpg',
+    vote_average: 9.0,
+    vote_count: 5100,
+    release_date: '2024-11-27',
+    original_language: 'en',
+    runtime: 100,
+    genres: ['Animation', 'Adventure', 'Family'],
+    cast: ['Auliʻi Cravalho', 'Dwayne Johnson', 'Alan Tudyk'],
+    isUpcoming: true,
+    tagline: 'The Ocean is Calling Her Back',
+  },
+  {
+    id: 9903,
+    title: 'Spider-Man: Beyond the Spider-Verse',
+    original_title: 'Spider-Man: Beyond the Spider-Verse',
+    overview: 'Miles Morales traverses the multiverse to save his father and resolve the temporal paradox created by the Spot.',
+    poster_path: 'https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg',
+    backdrop_path: 'https://image.tmdb.org/t/p/w1280/kVd3a9YeLGkoeR50jGEXM6EqseS.jpg',
+    vote_average: 9.1,
+    vote_count: 6100,
+    release_date: '2026-06-18',
+    original_language: 'en',
+    runtime: 145,
+    genres: ['Animation', 'Action', 'Sci-Fi'],
+    cast: ['Shameik Moore', 'Hailee Steinfeld', 'Oscar Isaac', 'Daniel Kaluuya'],
+    isUpcoming: true,
+    tagline: 'Every Universe Has a Hero',
+  },
+  {
+    id: 9904,
+    title: 'The Batman Part II',
+    original_title: 'The Batman Part II',
+    overview: 'The Dark Knight investigates Gotham City\'s deepest corporate and political conspiracy during a harsh winter freezing the city.',
+    poster_path: 'https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg',
+    backdrop_path: 'https://image.tmdb.org/t/p/w1280/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg',
+    vote_average: 8.9,
+    vote_count: 5400,
+    release_date: '2026-10-02',
+    original_language: 'en',
+    runtime: 165,
+    genres: ['Crime', 'Drama', 'Thriller'],
+    cast: ['Robert Pattinson', 'Colin Farrell', 'Andy Serkis', 'Jeffrey Wright'],
+    isUpcoming: true,
+    tagline: 'Gotham Never Sleeps',
+  },
+  {
+    id: 9905,
+    title: 'Gladiator II',
+    original_title: 'Gladiator II',
+    overview: 'Years after witnessing the death of Maximus, Lucius must enter the Colosseum after his home is conquered by tyrannical emperors.',
+    poster_path: 'https://upload.wikimedia.org/wikipedia/en/0/04/Gladiator_II_%282024%29_poster.jpg',
+    backdrop_path: 'https://image.tmdb.org/t/p/w1280/eZ239CUp1d6OryZEBPnO2n87gMG.jpg',
+    vote_average: 8.7,
+    vote_count: 3200,
+    release_date: '2024-11-22',
+    original_language: 'en',
+    runtime: 150,
+    genres: ['Action', 'Drama', 'History'],
+    cast: ['Paul Mescal', 'Pedro Pascal', 'Denzel Washington', 'Connie Nielsen'],
+    isUpcoming: true,
+    tagline: 'Strength and Honor',
+  },
+  {
+    id: 9906,
+    title: 'Wicked',
+    original_title: 'Wicked',
+    overview: 'Elphaba, an misunderstood green-skinned woman, forms an unlikely friendship with Glinda before their choices lead them to fulfill their destinies as the Witches of Oz.',
+    poster_path: 'https://upload.wikimedia.org/wikipedia/en/3/3c/Wicked_%282024_film%29_poster.png',
+    backdrop_path: 'https://image.tmdb.org/t/p/w1280/fm6K8Oi2AF2wfvV2Qp2Z55g7p4.jpg',
+    vote_average: 8.8,
+    vote_count: 4100,
+    release_date: '2024-11-27',
+    original_language: 'en',
+    runtime: 160,
+    genres: ['Fantasy', 'Music', 'Romance'],
+    cast: ['Cynthia Erivo', 'Ariana Grande', 'Jonathan Bailey', 'Jeff Goldblum'],
+    isUpcoming: true,
+    tagline: 'Discover the Untold Story of the Witches of Oz',
+  }
+];
+
 export const fetchMovieDetails = async (movieId, apiKey = DEFAULT_API_KEY) => {
+  const targetId = Number(movieId);
+  const foundInCatalog = MASTER_MOVIES_CATALOG.find((m) => m.id === targetId);
+  const foundInUpcoming = UPCOMING_MOVIES_LIST.find((m) => m.id === targetId);
+
+  if (foundInCatalog || foundInUpcoming) {
+    const found = foundInCatalog || foundInUpcoming;
+    return {
+      ...found,
+      genres: found.genres || mapGenreIds(found.genre_ids),
+      cast: found.credits?.cast
+        ? found.credits.cast.map((c) => (typeof c === 'string' ? c : c.name))
+        : (found.cast || ['Cast information available']),
+    };
+  }
+
   const endpoint = `${TMDB_BASE_URL}/movie/${movieId}?api_key=${apiKey}`;
   try {
     const response = await fetch(endpoint);
@@ -203,17 +325,26 @@ export const fetchMovieDetails = async (movieId, apiKey = DEFAULT_API_KEY) => {
         cast: data.credits?.cast
           ? data.credits.cast.slice(0, 6).map((c) => (typeof c === 'string' ? c : c.name))
           : ['Cast information available'],
+        isUpcoming: new Date(data.release_date || '') > new Date(),
       };
     }
   } catch (_err) {}
 
-  const targetId = Number(movieId);
-  const found = MASTER_MOVIES_CATALOG.find((m) => m.id === targetId) || MASTER_MOVIES_CATALOG[0];
+  const fallback = MASTER_MOVIES_CATALOG[0];
   return {
-    ...found,
-    genres: found.genres || mapGenreIds(found.genre_ids),
-    cast: found.credits?.cast
-      ? found.credits.cast.map((c) => (typeof c === 'string' ? c : c.name))
+    ...fallback,
+    genres: fallback.genres || mapGenreIds(fallback.genre_ids),
+    cast: fallback.credits?.cast
+      ? fallback.credits.cast.map((c) => (typeof c === 'string' ? c : c.name))
       : ['Cast information available'],
   };
 };
+
+export const fetchUpcomingMovies = async () => {
+  return {
+    success: true,
+    results: UPCOMING_MOVIES_LIST,
+  };
+};
+
+

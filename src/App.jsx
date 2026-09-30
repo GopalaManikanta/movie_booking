@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import MovieCatalog from './pages/MovieCatalog';
 import MovieDetails from './pages/MovieDetails';
 import TheatreListing from './pages/TheatreListing';
+import SeatSelection from './pages/SeatSelection';
 
 const AppContent = () => {
   const { theme } = useAuth();
@@ -65,6 +66,14 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <MovieDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/seat-selection/:id"
+            element={
+              <ProtectedRoute>
+                <SeatSelection />
               </ProtectedRoute>
             }
           />

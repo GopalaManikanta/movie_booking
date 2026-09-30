@@ -49,19 +49,20 @@ export const MovieDetails = () => {
     return langs[code?.toLowerCase()] || code?.toUpperCase() || 'English';
   };
 
+  const releaseDateObj = movie?.release_date ? new Date(movie.release_date) : null;
+  const isUpcomingMovie = movie?.isUpcoming || (releaseDateObj && releaseDateObj > new Date());
+
   const handleTrailerClick = () => {
     showToast(`🎬 Trailer preview for "${movie?.title}"`, 'info');
   };
 
   const handleBookTicket = () => {
+    if (isUpcomingMovie) {
+      showToast(`🔔 Pre-booking alert active! Tickets for "${movie?.title}" open on official release date.`, 'info');
+      return;
+    }
     if (movie) {
-      addBooking({
-        movie: movie.title,
-        theater: 'AMB Cinemas (Screen 1)',
-        seats: 'Recliner A-12, A-13',
-        amount: 700,
-      });
-      navigate('/dashboard');
+      navigate(`/seat-selection/${movie.id}`);
     }
   };
 
@@ -279,20 +280,37 @@ export const MovieDetails = () => {
                 onClick={handleTrailerClick}
                 className={`w-full sm:w-auto py-3.5 px-8 rounded-full border text-sm font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   theme === 'dark'
-                    ? 'bg-zinc-900 hover:bg-rose-950/80 border-rose-500/60 text-rose-400'
-                    : 'bg-white hover:bg-rose-50 border-rose-300 text-rose-600 shadow-md'
+                    ? 'bg-zinc-900 hover:bg-zinc-800 border-zinc-700 text-rose-400'
+                    : 'bg-white hover:bg-slate-100 border-slate-300 text-rose-600 shadow-md'
                 }`}
               >
-                <Play size={18} className="fill-rose-500 text-rose-500" /> Watch Trailer
+                <Play size={18} className="fill-rose-500 text-rose-500" /> Watch Official Trailer
               </button>
 
-              <button
-                onClick={handleBookTicket}
-                className="w-full sm:w-auto py-3.5 px-8 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-rose-950/50 transition-all cursor-pointer transform hover:-translate-y-0.5"
-              >
-                <Ticket size={18} /> Reserve Cinema Seats
-              </button>
+              {isUpcomingMovie ? (
+                <button
+                  onClick={handleBookTicket}
+                  className="w-full sm:w-auto py-3.5 px-8 rounded-full bg-amber-500/90 hover:bg-amber-400 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer border border-amber-400"
+                >
+                  <Ticket size={18} /> 🚀 Pre-Booking Opens Soon (Set Alert)
+                </button>
+              ) : (
+                <button
+                  onClick={handleBookTicket}
+                  className="w-full sm:w-auto py-3.5 px-8 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-xl shadow-rose-950/50 transition-all cursor-pointer transform hover:-translate-y-0.5"
+                >
+                  <Ticket size={18} /> Reserve Cinema Seats
+                </button>
+              )}
             </div>
+
+            {isUpcomingMovie && (
+              <p className={`text-xs font-semibold p-3 rounded-2xl border flex items-center gap-2 ${
+                theme === 'dark' ? 'bg-amber-500/10 border-amber-500/20 text-amber-300' : 'bg-amber-50 border-amber-200 text-amber-800'
+              }`}>
+                ℹ️ Seat reservation for this title is locked until official theatrical release on {movie.release_date}. Pre-booking alert registered!
+              </p>
+            )}
 
           </div>
 

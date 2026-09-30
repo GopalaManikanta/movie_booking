@@ -12,15 +12,9 @@ export const TheatreDetailsModal = ({ isOpen, onClose, theatre }) => {
 
   if (!isOpen || !theatre) return null;
 
-  const handleBookShow = (movieTitle, screenName, showTime) => {
-    addBooking({
-      movie: movieTitle,
-      theater: `${theatre.name} (${screenName}) [${showTime}]`,
-      seats: `Recliner B-5, B-6`,
-      amount: 600,
-    });
+  const handleBookShow = (movieTitle, screenName, showTime, movieId) => {
     onClose();
-    navigate('/dashboard');
+    navigate(`/seat-selection/${movieId || 533535}`);
   };
 
   const handleOpenMaps = () => {
@@ -218,7 +212,7 @@ export const TheatreDetailsModal = ({ isOpen, onClose, theatre }) => {
                       {scr.showtimes.map((st, sIdx) => (
                         <button
                           key={sIdx}
-                          onClick={() => handleBookShow(scr.movieTitle, scr.screenName, st)}
+                          onClick={() => handleBookShow(scr.movieTitle, scr.screenName, st, scr.movieId)}
                           className={`px-4 py-2 rounded-xl border font-black text-xs transition-all flex items-center gap-2 cursor-pointer shadow-sm transform hover:scale-105 ${
                             theme === 'dark'
                               ? 'bg-zinc-950 hover:bg-rose-600 border-zinc-800 hover:border-rose-500 text-white'

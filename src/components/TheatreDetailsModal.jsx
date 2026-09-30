@@ -1,20 +1,22 @@
 import React from 'react';
 import { 
   X, Building2, MapPin, Phone, Mail, Navigation, Star, 
-  Sparkles, Clock, Tv, Ticket, ExternalLink, Film, ArrowRight 
+  Sparkles, Clock, Ticket, ExternalLink, Film, ArrowRight 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const TheatreDetailsModal = ({ isOpen, onClose, theatre }) => {
   const navigate = useNavigate();
-  const { theme, addBooking } = useAuth();
+  const { theme } = useAuth();
 
   if (!isOpen || !theatre) return null;
 
   const handleBookShow = (movieTitle, screenName, showTime, movieId) => {
     onClose();
-    navigate(`/seat-selection/${movieId || 533535}`);
+    const fullTheaterName = `${theatre.name}: ${screenName}`;
+    const query = `?theater=${encodeURIComponent(fullTheaterName)}&time=${encodeURIComponent(showTime)}`;
+    navigate(`/seat-selection/${movieId || 533535}${query}`);
   };
 
   const handleOpenMaps = () => {

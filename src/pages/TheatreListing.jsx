@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Search, MapPin, Building2, Phone, Mail, Navigation, Star, 
-  ChevronLeft, ChevronRight, RotateCcw, Sparkles, Filter, 
-  Tv, Clock, Ticket, ExternalLink, Info, CheckCircle2 
+  ChevronLeft, ChevronRight, RotateCcw, Sparkles, 
+  Tv, Info, CheckCircle2 
 } from 'lucide-react';
 import { fetchTheatres } from '../services/theatreService';
 import { CITIES_LIST } from '../data/theatresData';
@@ -11,7 +11,7 @@ import TheatreDetailsModal from '../components/TheatreDetailsModal';
 import { useAuth } from '../context/AuthContext';
 
 export const TheatreListing = () => {
-  const { showToast, theme } = useAuth();
+  const { theme } = useAuth();
 
   const [theatres, setTheatres] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Film, Building2, Ticket, Clock, Calendar, DollarSign,
   Clock3, Sparkles, Rocket, Search, ArrowRight, Clapperboard,
-  CheckCircle2, TrendingUp, Zap, Star, Globe, Bell,
+  TrendingUp, Zap, Star, Bell,
   BarChart3, LineChart, Activity
 } from 'lucide-react';
 import { Link } from 'react-router-dom';

@@ -236,7 +236,7 @@ export const UPCOMING_MOVIES_LIST = [
     original_title: 'The Batman Part II',
     overview: 'The Dark Knight investigates Gotham City\'s deepest corporate and political conspiracy during a harsh winter freezing the city.',
     poster_path: 'https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg',
-    backdrop_path: 'https://image.tmdb.org/t/p/w1280/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg',
+    backdrop_path: 'https://image.tmdb.org/t/p/w1280/nMKdUUwvWjA23vuvBjhRSflmF3Z.jpg',
     vote_average: 8.9,
     vote_count: 5400,
     release_date: '2026-10-02',

@@ -1,44 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Film, Building2, Ticket, CheckCircle2, 
-  Sparkles, Info, Crown
+  Sparkles, Info, Crown, Printer, Copy, Check, QrCode, 
+  X
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import { fetchMovieDetails } from '../services/tmdbService';
+import { getTheatresForMovie } from '../services/theatreService';
 
 export const SeatSelection = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { theme, showToast, addBooking, currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { theme, showToast, addBooking, currentUser, userBookings } = useAuth();
 
   const MAX_SEAT_LIMIT = 10;
 
+  // Read initial parameters from query string if available
+  const paramTheater = searchParams.get('theater');
+  const paramTime = searchParams.get('time');
+
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [availableTheatres, setAvailableTheatres] = useState([]);
 
   // Selected Showtime & Theatre State
-  const [selectedTheater, setSelectedTheater] = useState('AMB Cinemas: Screen 1 (4K Dolby)');
-  const [selectedTime, setSelectedTime] = useState('06:30 PM');
+  const [selectedTheater, setSelectedTheater] = useState(
+    paramTheater || ''
+  );
+  const [selectedTime, setSelectedTime] = useState(
+    paramTime || '06:30 PM'
+  );
 
   // Selected Seats State
   const [selectedSeats, setSelectedSeats] = useState([]);
 
-  // Fixed Occupied/Booked Seats for realism
-  const occupiedSeatCodes = ['A3', 'A4', 'B7', 'C2', 'C3', 'D8', 'D9', 'F5', 'F6', 'G1', 'G2'];
+  // Confirmation Modal State
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [confirmedBooking, setConfirmedBooking] = useState(null);
+  const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       const data = await fetchMovieDetails(id || 533535);
       setMovie(data);
+
+      if (data) {
+        const options = getTheatresForMovie(data.id, data.title);
+        setAvailableTheatres(options);
+
+        if (!paramTheater && options.length > 0) {
+          setSelectedTheater(options[0].fullName);
+          if (!paramTime && options[0].showtimes && options[0].showtimes.length > 0) {
+            setSelectedTime(options[0].showtimes[0]);
+          }
+        }
+      }
+
       setLoading(false);
     };
     loadData();
-  }, [id]);
+  }, [id, paramTheater, paramTime]);
 
-  // Seat Rows & Categories Configuration (Recliner VIP at Top = Back of Theatre, Screen at Bottom)
+  // Dynamic Occupied Seats: Merges default occupied seats with real-time stored bookings
+  const getDynamicOccupiedSeats = useCallback(() => {
+    const staticOccupied = ['A3', 'A4', 'B7', 'C2', 'C3', 'D8', 'D9', 'F5', 'F6', 'G1', 'G2'];
+    
+    if (!userBookings || userBookings.length === 0) return staticOccupied;
+
+    const currentMovieTitle = (movie?.title || '').toLowerCase();
+    const currentTheaterName = (selectedTheater || '').toLowerCase();
+
+    const matching = userBookings.filter(b => {
+      const bMovie = (b.movie || '').toLowerCase();
+      const bTheater = (b.theater || '').toLowerCase();
+
+      const movieMatch = bMovie && (bMovie.includes(currentMovieTitle) || currentMovieTitle.includes(bMovie));
+      const theaterMatch = bTheater && (bTheater.includes(currentTheaterName.split(':')[0].toLowerCase()) || currentTheaterName.toLowerCase().includes(bTheater.split('[')[0].trim()));
+      
+      return movieMatch && theaterMatch;
+    });
+
+    const bookedCodes = [];
+    matching.forEach(b => {
+      if (Array.isArray(b.seatCodes) && b.seatCodes.length > 0) {
+        bookedCodes.push(...b.seatCodes);
+      } else if (typeof b.seats === 'string') {
+        const matches = b.seats.match(/[A-G]\d{1,2}/g);
+        if (matches) bookedCodes.push(...matches);
+      }
+    });
+
+    return Array.from(new Set([...staticOccupied, ...bookedCodes]));
+  }, [userBookings, movie, selectedTheater, selectedTime]);
+
+  const activeOccupiedSeats = getDynamicOccupiedSeats();
+
+  // Reset selected seats if user switches theater or showtime
+  useEffect(() => {
+    setSelectedSeats([]);
+  }, [selectedTheater, selectedTime]);
+
+  // Seat Rows & Categories Configuration
   const seatCategories = [
     {
       name: 'Recliner VIP (Back Row Luxury)',
@@ -66,20 +132,18 @@ export const SeatSelection = () => {
     }
   ];
 
-  // Toggle seat selection
+  // Toggle seat selection with real-time double booking check
   const handleSeatClick = (seatCode, categoryName, seatPrice) => {
-    if (occupiedSeatCodes.includes(seatCode)) {
-      showToast(`Seat ${seatCode} is already booked by another customer.`, 'error');
+    if (activeOccupiedSeats.includes(seatCode)) {
+      showToast(`⚠️ Duplicate Booking Prevented! Seat ${seatCode} is already reserved by another customer.`, 'error');
       return;
     }
 
     const exists = selectedSeats.some((s) => s.code === seatCode);
 
     if (exists) {
-      // Remove seat
       setSelectedSeats((prev) => prev.filter((s) => s.code !== seatCode));
     } else {
-      // Check max limit
       if (selectedSeats.length >= MAX_SEAT_LIMIT) {
         showToast(`⚠️ Maximum ${MAX_SEAT_LIMIT} seats allowed per booking transaction.`, 'error');
         return;
@@ -92,31 +156,67 @@ export const SeatSelection = () => {
     }
   };
 
-  // Calculations
+  // Ticket Price Calculation
   const totalSubtotal = selectedSeats.reduce((sum, s) => sum + s.price, 0);
   const convenienceFee = selectedSeats.length > 0 ? 30 : 0;
-  const grandTotal = totalSubtotal + convenienceFee;
+  const gstTax = selectedSeats.length > 0 ? Math.round(totalSubtotal * 0.18) : 0;
+  const grandTotal = totalSubtotal + convenienceFee + gstTax;
 
-  // Confirm Booking Handler
+  // Confirm Booking & Generate Unique Booking ID
   const handleConfirmBooking = () => {
     if (selectedSeats.length === 0) {
       showToast('Please select at least 1 seat to proceed with booking.', 'error');
       return;
     }
 
-    const seatCodesString = selectedSeats.map((s) => s.code).join(', ');
+    // Real-time re-validation to prevent duplicate booking
+    const currentOccupied = getDynamicOccupiedSeats();
+    const conflictingSeat = selectedSeats.find(s => currentOccupied.includes(s.code));
+
+    if (conflictingSeat) {
+      showToast(`⚠️ Duplicate Booking Prevented! Seat ${conflictingSeat.code} was just reserved for this showtime. Please select a different seat.`, 'error');
+      setSelectedSeats(prev => prev.filter(s => s.code !== conflictingSeat.code));
+      return;
+    }
+
+    const seatCodesArray = selectedSeats.map((s) => s.code);
+    const seatCodesString = seatCodesArray.join(', ');
     const categorySummary = Array.from(new Set(selectedSeats.map(s => s.category.split(' ')[0]))).join(' / ');
 
     const newBooking = addBooking({
       customer: currentUser?.name || 'Manikanta',
       movie: movie?.title || 'Deadpool & Wolverine',
-      theater: `${selectedTheater} [${selectedTime}]`,
+      movieId: movie?.id,
+      theater: selectedTheater,
+      showTime: selectedTime,
       seats: `${categorySummary} (${seatCodesString})`,
+      seatCodes: seatCodesArray,
       amount: grandTotal,
+      subtotal: totalSubtotal,
+      convenienceFee: convenienceFee,
+      gst: gstTax,
     });
 
-    showToast(`🎟️ Reserved ${selectedSeats.length} seats for ${movie?.title}! Booking ID: ${newBooking.id}`, 'success');
-    navigate('/dashboard');
+    setConfirmedBooking({
+      ...newBooking,
+      moviePoster: movie?.poster_path,
+      movieTitle: movie?.title,
+      selectedSeatsList: selectedSeats,
+    });
+    setIsConfirmationModalOpen(true);
+  };
+
+  const handleCopyBookingId = () => {
+    if (confirmedBooking?.id) {
+      navigator.clipboard.writeText(confirmedBooking.id);
+      setCopiedId(true);
+      showToast(`Copied Booking ID: ${confirmedBooking.id}`, 'success');
+      setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
+
+  const handlePrintTicket = () => {
+    window.print();
   };
 
   if (loading) {
@@ -187,26 +287,45 @@ export const SeatSelection = () => {
               <Building2 size={14} className="text-rose-500" />
               <select
                 value={selectedTheater}
-                onChange={(e) => setSelectedTheater(e.target.value)}
-                className={`bg-transparent text-xs font-bold outline-none cursor-pointer ${
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSelectedTheater(val);
+                  const matched = availableTheatres.find((th) => th.fullName === val);
+                  if (matched && matched.showtimes && matched.showtimes.length > 0) {
+                    setSelectedTime(matched.showtimes[0]);
+                  }
+                }}
+                className={`bg-transparent text-xs font-bold outline-none cursor-pointer max-w-[280px] sm:max-w-none ${
                   theme === 'dark' ? 'text-white' : 'text-slate-900'
                 }`}
               >
-                <option value="AMB Cinemas: Screen 1 (4K Dolby)">AMB Cinemas - Screen 1 (4K)</option>
-                <option value="Prasad’s Multiplex (IMAX 3D)">Prasad’s Multiplex - IMAX 3D</option>
-                <option value="PVR Inorbit Mall (Screen 4)">PVR Inorbit Mall - Screen 4</option>
-                <option value="Asian Radhika Multiplex (Screen 2)">Asian Radhika - Screen 2</option>
+                {availableTheatres.map((th) => (
+                  <option 
+                    key={th.fullName} 
+                    value={th.fullName}
+                    className={theme === 'dark' ? 'bg-zinc-950 text-slate-100 font-bold p-2' : 'bg-white text-slate-900 font-bold p-2'}
+                  >
+                    📍 {th.fullName}
+                  </option>
+                ))}
               </select>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              {['11:00 AM', '02:15 PM', '06:30 PM', '09:45 PM'].map((t) => (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {(
+                availableTheatres.find((th) => th.fullName === selectedTheater)?.showtimes || [
+                  '11:00 AM',
+                  '02:15 PM',
+                  '06:30 PM',
+                  '09:45 PM',
+                ]
+              ).map((t) => (
                 <button
                   key={t}
                   onClick={() => setSelectedTime(t)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-black border transition-all cursor-pointer ${
                     selectedTime === t
-                      ? 'bg-rose-600 text-white border-rose-500 shadow-md'
+                      ? 'bg-rose-600 text-white border-rose-500 shadow-md scale-102'
                       : theme === 'dark'
                       ? 'bg-zinc-900 border-zinc-800 text-slate-400 hover:text-white'
                       : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
@@ -265,7 +384,7 @@ export const SeatSelection = () => {
             </div>
           </div>
 
-          {/* SEAT GRID LAYOUT BY CATEGORIES (RECLINER VIP AT TOP -> STANDARD AT BOTTOM) */}
+          {/* SEAT GRID LAYOUT BY CATEGORIES */}
           <div className="w-full space-y-8 flex flex-col items-center">
             {seatCategories.map((cat) => (
               <div key={cat.name} className="w-full max-w-2xl space-y-3">
@@ -293,7 +412,7 @@ export const SeatSelection = () => {
                       <div className="flex items-center gap-1.5">
                         {[1, 2, 3, 4, 5, 6].map((num) => {
                           const seatCode = `${rowLetter}${num}`;
-                          const isOccupied = occupiedSeatCodes.includes(seatCode);
+                          const isOccupied = activeOccupiedSeats.includes(seatCode);
                           const isSelected = selectedSeats.some((s) => s.code === seatCode);
 
                           return (
@@ -331,7 +450,7 @@ export const SeatSelection = () => {
                       <div className="flex items-center gap-1.5">
                         {[7, 8, 9, 10, 11, 12].map((num) => {
                           const seatCode = `${rowLetter}${num}`;
-                          const isOccupied = occupiedSeatCodes.includes(seatCode);
+                          const isOccupied = activeOccupiedSeats.includes(seatCode);
                           const isSelected = selectedSeats.some((s) => s.code === seatCode);
 
                           return (
@@ -373,7 +492,7 @@ export const SeatSelection = () => {
             ))}
           </div>
 
-          {/* BOTTOM SCREEN THIS WAY DISPLAY (BOOKMYSHOW REAL-TIME CINEMA HALL ARCHITECTURE) */}
+          {/* BOTTOM SCREEN DISPLAY */}
           <div className="w-full flex flex-col items-center mt-10">
             <div className="w-full max-w-xl h-8 border-b-4 border-rose-500 rounded-[100%] shadow-[0_10px_25px_rgba(244,63,94,0.4)] flex items-center justify-center">
               <span className="bg-rose-500/20 text-rose-500 border border-rose-500/30 text-[10px] font-black px-5 py-0.5 rounded-full uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
@@ -465,6 +584,10 @@ export const SeatSelection = () => {
                 <span className={theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>Convenience & Digital Fee:</span>
                 <span className={`font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>₹{convenienceFee}</span>
               </div>
+              <div className="flex items-center justify-between">
+                <span className={theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>GST & Cinema Taxes (18%):</span>
+                <span className={`font-black ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>₹{gstTax}</span>
+              </div>
               <div className="flex items-center justify-between pt-2 border-t border-dashed border-zinc-700 text-sm font-black">
                 <span className="text-rose-500">Total Ticket Price:</span>
                 <span className="text-xl font-black text-rose-500">₹{grandTotal}</span>
@@ -490,6 +613,111 @@ export const SeatSelection = () => {
         </div>
 
       </main>
+
+      {/* BOOKING CONFIRMATION MODAL & DIGITAL TICKET RECEIPT */}
+      {isConfirmationModalOpen && confirmedBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
+          <div className={`relative w-full max-w-md border rounded-3xl p-6 shadow-2xl space-y-5 transition-all ${
+            theme === 'dark' ? 'bg-zinc-950 border-zinc-800 text-white shadow-rose-950/50' : 'bg-white border-slate-200 text-slate-900 shadow-xl'
+          }`}>
+            
+            {/* Close Modal X */}
+            <button
+              onClick={() => setIsConfirmationModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-zinc-900 hover:bg-rose-600 transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+
+            {/* Header Badge */}
+            <div className="text-center space-y-1">
+              <div className="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto mb-2 shadow-lg">
+                <CheckCircle2 size={32} />
+              </div>
+              <h2 className="text-2xl font-black tracking-tight text-emerald-400">Booking Confirmed! 🎉</h2>
+              <p className="text-xs font-semibold text-slate-400">Your cinema seats have been successfully reserved.</p>
+            </div>
+
+            {/* Generated Booking ID Card */}
+            <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-3 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-extrabold text-rose-400 uppercase tracking-widest block">Generated Booking ID</span>
+                <span className="text-lg font-black font-mono text-white tracking-wider">{confirmedBooking.id}</span>
+              </div>
+              <button
+                onClick={handleCopyBookingId}
+                className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs flex items-center gap-1 transition-all cursor-pointer shadow-md"
+              >
+                {copiedId ? <Check size={14} /> : <Copy size={14} />}
+                <span>{copiedId ? 'Copied!' : 'Copy'}</span>
+              </button>
+            </div>
+
+            {/* Ticket Receipt Info */}
+            <div className={`p-4 rounded-2xl border space-y-2.5 text-xs font-bold ${
+              theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Movie Title:</span>
+                <span className="text-rose-400 font-black">{confirmedBooking.movieTitle}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Theatre & Screen:</span>
+                <span className={theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}>{confirmedBooking.theater}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Showtime:</span>
+                <span className="text-emerald-400 font-extrabold">{confirmedBooking.showTime}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Reserved Seats:</span>
+                <span className="text-amber-400 font-black">{confirmedBooking.seats}</span>
+              </div>
+              <div className="flex justify-between pt-2 border-t border-dashed border-zinc-700">
+                <span className="text-slate-400">Total Amount Paid:</span>
+                <span className="text-base font-black text-rose-500">₹{confirmedBooking.amount}</span>
+              </div>
+            </div>
+
+            {/* Simulated Digital Barcode / QR Section */}
+            <div className="border border-dashed border-zinc-800 rounded-2xl p-3 text-center bg-zinc-900/50 space-y-1">
+              <div className="flex items-center justify-center gap-1.5 text-slate-400 font-mono text-[10px] tracking-widest">
+                <QrCode size={16} className="text-rose-500" />
+                <span>SCAN AT THEATRE ENTRANCE GATE</span>
+              </div>
+              <div className="w-full h-8 bg-zinc-950 rounded-lg flex items-center justify-center tracking-[0.4em] font-mono text-xs font-black text-slate-500">
+                |||| | ||||| || |||| ||| |||
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-2">
+              <button
+                onClick={handlePrintTicket}
+                className="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-slate-200 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Printer size={14} /> Print / Save Ticket Receipt
+              </button>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs flex items-center justify-center gap-1 transition-all cursor-pointer shadow-md"
+                >
+                  <Ticket size={14} /> My Dashboard
+                </button>
+                <button
+                  onClick={() => navigate('/movies')}
+                  className="py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-slate-300 font-extrabold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer"
+                >
+                  <Film size={14} /> Book Another
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );

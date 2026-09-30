@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useToast } from './ToastContext';
+import { useTheme } from './ThemeContext';
+import { useBooking } from './BookingContext';
 
 const AuthContext = createContext();
 
@@ -7,10 +10,19 @@ export const useAuth = () => {
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context;
+
+  const toastState = useToast();
+  const themeState = useTheme();
+  const bookingState = useBooking();
+
+  return {
+    ...context,
+    ...toastState,
+    ...themeState,
+    ...bookingState,
+  };
 };
 
-// Seed initial default demo user if DB is empty
 const INITIAL_DEMO_USERS = [
   {
     id: 'usr_demo_1',
@@ -24,7 +36,9 @@ const INITIAL_DEMO_USERS = [
 ];
 
 export const AuthProvider = ({ children }) => {
-  // Current active user
+  const { showToast } = useToast();
+
+  // Current active user session state
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const savedUser = localStorage.getItem('cinemax_current_user');
@@ -51,16 +65,6 @@ export const AuthProvider = ({ children }) => {
     }
   });
 
-  // Global Toast state
-  const [toast, setToast] = useState(null);
-
-  const showToast = (message, type = 'info') => {
-    setToast({ message, type, id: Date.now() });
-    setTimeout(() => {
-      setToast(null);
-    }, 4000);
-  };
-
   // Sync users database changes to localStorage
   useEffect(() => {
     try {
@@ -83,10 +87,9 @@ export const AuthProvider = ({ children }) => {
     }
   }, [currentUser]);
 
-  // Real-time login handler
+  // User Login Handler
   const login = async (email, password) => {
-    // Artificial latency for realistic async feel
-    await new Promise((res) => setTimeout(res, 600));
+    await new Promise((res) => setTimeout(res, 400));
 
     const normalizedEmail = email.trim().toLowerCase();
     const foundUser = usersDb.find(
@@ -94,16 +97,15 @@ export const AuthProvider = ({ children }) => {
     );
 
     if (!foundUser) {
-      showToast('No account found with this email address.', 'error');
+      if (showToast) showToast('No account found with this email address.', 'error');
       return { success: false, error: 'Account not found. Please register first.' };
     }
 
     if (foundUser.password !== password) {
-      showToast('Invalid password. Please try again.', 'error');
+      if (showToast) showToast('Invalid password. Please try again.', 'error');
       return { success: false, error: 'Incorrect password.' };
     }
 
-    // Login successful
     const userSession = {
       id: foundUser.id,
       name: foundUser.name,
@@ -114,13 +116,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     setCurrentUser(userSession);
-    showToast(`Welcome back, ${foundUser.name}! 👋`, 'success');
+    if (showToast) showToast(`Welcome back, ${foundUser.name}! 👋`, 'success');
     return { success: true, user: userSession };
   };
 
-  // Real-time register handler
+  // User Registration Handler
   const register = async (userData) => {
-    await new Promise((res) => setTimeout(res, 600));
+    await new Promise((res) => setTimeout(res, 400));
 
     const normalizedEmail = userData.email.trim().toLowerCase();
     const existingUser = usersDb.find(
@@ -128,7 +130,7 @@ export const AuthProvider = ({ children }) => {
     );
 
     if (existingUser) {
-      showToast('An account with this email already exists.', 'error');
+      if (showToast) showToast('An account with this email already exists.', 'error');
       return { success: false, error: 'Email already registered. Try logging in.' };
     }
 
@@ -145,7 +147,6 @@ export const AuthProvider = ({ children }) => {
     const updatedDb = [...usersDb, newUser];
     setUsersDb(updatedDb);
 
-    // Auto-login registered user
     const userSession = {
       id: newUser.id,
       name: newUser.name,
@@ -156,13 +157,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     setCurrentUser(userSession);
-    showToast('Registration successful! Welcome to MovieMax 🎉', 'success');
+    if (showToast) showToast('Registration successful! Welcome to MovieMax 🎉', 'success');
     return { success: true, user: userSession };
   };
 
-  // Real-time password reset handler
+  // User Password Reset Handler
   const resetPassword = async (email, newPassword) => {
-    await new Promise((res) => setTimeout(res, 600));
+    await new Promise((res) => setTimeout(res, 400));
 
     const normalizedEmail = email.trim().toLowerCase();
     const userIndex = usersDb.findIndex(
@@ -170,7 +171,7 @@ export const AuthProvider = ({ children }) => {
     );
 
     if (userIndex === -1) {
-      showToast('No user found with this email.', 'error');
+      if (showToast) showToast('No user found with this email.', 'error');
       return { success: false, error: 'Email not found in our system.' };
     }
 
@@ -178,105 +179,23 @@ export const AuthProvider = ({ children }) => {
     updatedDb[userIndex].password = newPassword;
     setUsersDb(updatedDb);
 
-    showToast('Password reset successfully! You can now login.', 'success');
+    if (showToast) showToast('Password reset successfully! You can now login.', 'success');
     return { success: true };
   };
 
-  // Real-time logout handler
+  // User Logout Handler
   const logout = () => {
     setCurrentUser(null);
-    showToast('You have been logged out safely.', 'info');
-  };
-
-  // Dynamic user bookings state starting at [] by default
-  const [userBookings, setUserBookings] = useState(() => {
-    try {
-      const savedBookings = localStorage.getItem('cinemax_user_bookings');
-      return savedBookings ? JSON.parse(savedBookings) : [];
-    } catch (e) {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('cinemax_user_bookings', JSON.stringify(userBookings));
-    } catch (e) {
-      console.error('Failed to sync bookings to localStorage:', e);
-    }
-  }, [userBookings]);
-
-  const addBooking = (bookingData) => {
-    const newBooking = {
-      id: 'TKT-' + Math.floor(1000 + Math.random() * 9000),
-      customer: currentUser?.name || bookingData.customer || 'Manikanta',
-      movie: bookingData.movie || 'Deadpool & Wolverine',
-      theater: bookingData.theater || 'AMB Cinemas',
-      seats: bookingData.seats || 'Recliner A-12',
-      amount: bookingData.amount || 350,
-      status: 'Confirmed 🟢',
-      time: 'Just now',
-      timestamp: Date.now(),
-    };
-
-    setUserBookings((prev) => [newBooking, ...prev]);
-    showToast(`🎟️ Ticket Booked Successfully! ID: ${newBooking.id}`, 'success');
-    return newBooking;
-  };
-
-  const clearBookings = () => {
-    setUserBookings([]);
-    showToast('Cleared all bookings state back to 0.', 'info');
-  };
-
-  // Global Theme state (dark vs light)
-  const [theme, setTheme] = useState(() => {
-    try {
-      const savedTheme = localStorage.getItem('cinemax_theme');
-      return savedTheme === 'light' ? 'light' : 'dark';
-    } catch (e) {
-      return 'dark';
-    }
-  });
-
-  // Sync active theme class to document element & localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('cinemax_theme', theme);
-      if (theme === 'light') {
-        document.documentElement.classList.add('light');
-        document.documentElement.classList.remove('dark');
-      } else {
-        document.documentElement.classList.add('dark');
-        document.documentElement.classList.remove('light');
-      }
-    } catch (e) {
-      console.error('Failed to sync theme to DOM:', e);
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => {
-      const nextTheme = prev === 'dark' ? 'light' : 'dark';
-      showToast(`Switched to ${nextTheme === 'dark' ? 'Dark 🌙' : 'Light ☀️'} Mode`, 'info');
-      return nextTheme;
-    });
+    if (showToast) showToast('You have been logged out safely.', 'info');
   };
 
   const value = {
     currentUser,
     usersDb,
-    userBookings,
-    addBooking,
-    clearBookings,
     login,
     register,
     resetPassword,
     logout,
-    toast,
-    showToast,
-    theme,
-    toggleTheme,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

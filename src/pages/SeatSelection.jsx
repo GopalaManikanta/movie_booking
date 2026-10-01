@@ -70,6 +70,9 @@ export const SeatSelection = () => {
     const currentTheaterName = (selectedTheater || '').toLowerCase();
 
     const matching = userBookings.filter(b => {
+      // Exclude cancelled bookings so seats are freed up and available
+      if (b.status === 'Cancelled 🔴' || b.status?.includes('Cancelled')) return false;
+
       const bMovie = (b.movie || '').toLowerCase();
       const bTheater = (b.theater || '').toLowerCase();
 
@@ -90,7 +93,7 @@ export const SeatSelection = () => {
     });
 
     return Array.from(new Set([...staticOccupied, ...bookedCodes]));
-  }, [userBookings, movie, selectedTheater, selectedTime]);
+  }, [userBookings, movie, selectedTheater]);
 
   const activeOccupiedSeats = getDynamicOccupiedSeats();
 

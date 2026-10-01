@@ -13,6 +13,7 @@ import MovieDetails from './pages/MovieDetails';
 import TheatreListing from './pages/TheatreListing';
 import SeatSelection from './pages/SeatSelection';
 import Payment from './pages/Payment';
+import BookingHistory from './pages/BookingHistory';
 
 const AppContent = () => {
   const { theme } = useAuth();
@@ -83,6 +84,22 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <Payment />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <BookingHistory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bookings"
+            element={
+              <ProtectedRoute>
+                <BookingHistory />
               </ProtectedRoute>
             }
           />

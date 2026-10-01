@@ -19,7 +19,7 @@ export const BookingProvider = ({ children }) => {
     try {
       const savedBookings = localStorage.getItem('cinemax_user_bookings');
       return savedBookings ? JSON.parse(savedBookings) : [];
-    } catch (_err) {
+    } catch {
       return [];
     }
   });
@@ -76,6 +76,18 @@ export const BookingProvider = ({ children }) => {
     }
   }, [showToast]);
 
+  // Cancel Booking and mark as Cancelled 🔴
+  const cancelBooking = useCallback((bookingId) => {
+    setUserBookings((prev) =>
+      prev.map((b) =>
+        b.id === bookingId ? { ...b, status: 'Cancelled 🔴' } : b
+      )
+    );
+    if (showToast) {
+      showToast(`🔴 Booking ${bookingId} cancelled. Refund initiated!`, 'info');
+    }
+  }, [showToast]);
+
   // Dynamic Occupied Seats Finder
   const getOccupiedSeats = useCallback((movieTitle, theaterName, showTime) => {
     const baseOccupied = ['A3', 'A4', 'B7', 'C2', 'C3', 'D8', 'D9', 'F5', 'F6', 'G1', 'G2'];
@@ -86,6 +98,9 @@ export const BookingProvider = ({ children }) => {
     const targetTime = (showTime || '').toLowerCase();
 
     const matching = userBookings.filter(b => {
+      // Exclude cancelled bookings so seats are freed up
+      if (b.status === 'Cancelled 🔴') return false;
+
       const bMovie = (b.movie || '').toLowerCase();
       const bTheater = (b.theater || '').toLowerCase();
       const bTime = (b.showTime || b.time || '').toLowerCase();
@@ -119,6 +134,7 @@ export const BookingProvider = ({ children }) => {
   const value = {
     userBookings,
     addBooking,
+    cancelBooking,
     clearBookings,
     getOccupiedSeats,
     isSeatBooked,

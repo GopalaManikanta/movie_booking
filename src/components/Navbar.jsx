@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Film, LayoutDashboard, Clapperboard, Building2, LogOut, Clock, Sun, Moon } from 'lucide-react';
+import { Film, LayoutDashboard, Clapperboard, Building2, LogOut, Clock, Sun, Moon, Ticket } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Navbar = () => {
@@ -24,6 +24,7 @@ export const Navbar = () => {
     { label: 'Operations Hub', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Movie Catalog', path: '/movies', icon: Clapperboard },
     { label: 'Theatre Listing', path: '/theatres', icon: Building2 },
+    { label: 'Booking History', path: '/history', icon: Ticket },
   ];
 
   return (

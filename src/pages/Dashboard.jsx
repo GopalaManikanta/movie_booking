@@ -66,7 +66,7 @@ export const Dashboard = () => {
   const totalMoviesCount = 25;
   const totalTheatresCount = 12;
   const availableShowsCount = 48;
-  const upcomingMoviesCount = 5;
+  const upcomingMoviesCount = upcomingMovies.length || 6;
 
   // Filter recent bookings
   const filteredBookings = (userBookings || []).filter((b) =>

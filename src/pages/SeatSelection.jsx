@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Film, Building2, Ticket, CheckCircle2, 
-  Sparkles, Info, Crown, Printer, Copy, Check, QrCode, 
-  X
+  Sparkles, Info, Crown
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
@@ -14,13 +13,14 @@ export const SeatSelection = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { theme, showToast, addBooking, currentUser, userBookings } = useAuth();
+  const { theme, showToast, userBookings } = useAuth();
 
   const MAX_SEAT_LIMIT = 10;
 
   // Read initial parameters from query string if available
   const paramTheater = searchParams.get('theater');
   const paramTime = searchParams.get('time');
+  const paramDate = searchParams.get('date') || 'Today, 30 Sep';
 
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,11 +36,6 @@ export const SeatSelection = () => {
 
   // Selected Seats State
   const [selectedSeats, setSelectedSeats] = useState([]);
-
-  // Confirmation Modal State
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
-  const [confirmedBooking, setConfirmedBooking] = useState(null);
-  const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -183,40 +178,22 @@ export const SeatSelection = () => {
     const seatCodesString = seatCodesArray.join(', ');
     const categorySummary = Array.from(new Set(selectedSeats.map(s => s.category.split(' ')[0]))).join(' / ');
 
-    const newBooking = addBooking({
-      customer: currentUser?.name || 'Manikanta',
-      movie: movie?.title || 'Deadpool & Wolverine',
-      movieId: movie?.id,
-      theater: selectedTheater,
-      showTime: selectedTime,
-      seats: `${categorySummary} (${seatCodesString})`,
-      seatCodes: seatCodesArray,
-      amount: grandTotal,
-      subtotal: totalSubtotal,
-      convenienceFee: convenienceFee,
-      gst: gstTax,
+    navigate('/payment', {
+      state: {
+        movieId: movie?.id,
+        movieTitle: movie?.title || 'Deadpool & Wolverine',
+        posterPath: movie?.poster_path || 'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg',
+        theater: selectedTheater,
+        showTime: selectedTime,
+        date: paramDate,
+        seats: seatCodesArray,
+        seatsText: `${categorySummary} (${seatCodesString})`,
+        subtotal: totalSubtotal,
+        convenienceFee: convenienceFee,
+        gstTax: gstTax,
+        grandTotal: grandTotal,
+      }
     });
-
-    setConfirmedBooking({
-      ...newBooking,
-      moviePoster: movie?.poster_path,
-      movieTitle: movie?.title,
-      selectedSeatsList: selectedSeats,
-    });
-    setIsConfirmationModalOpen(true);
-  };
-
-  const handleCopyBookingId = () => {
-    if (confirmedBooking?.id) {
-      navigator.clipboard.writeText(confirmedBooking.id);
-      setCopiedId(true);
-      showToast(`Copied Booking ID: ${confirmedBooking.id}`, 'success');
-      setTimeout(() => setCopiedId(false), 2000);
-    }
-  };
-
-  const handlePrintTicket = () => {
-    window.print();
   };
 
   if (loading) {
@@ -613,111 +590,6 @@ export const SeatSelection = () => {
         </div>
 
       </main>
-
-      {/* BOOKING CONFIRMATION MODAL & DIGITAL TICKET RECEIPT */}
-      {isConfirmationModalOpen && confirmedBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-md border rounded-3xl p-6 shadow-2xl space-y-5 transition-all ${
-            theme === 'dark' ? 'bg-zinc-950 border-zinc-800 text-white shadow-rose-950/50' : 'bg-white border-slate-200 text-slate-900 shadow-xl'
-          }`}>
-            
-            {/* Close Modal X */}
-            <button
-              onClick={() => setIsConfirmationModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full bg-zinc-900 hover:bg-rose-600 transition-colors cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-
-            {/* Header Badge */}
-            <div className="text-center space-y-1">
-              <div className="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto mb-2 shadow-lg">
-                <CheckCircle2 size={32} />
-              </div>
-              <h2 className="text-2xl font-black tracking-tight text-emerald-400">Booking Confirmed! 🎉</h2>
-              <p className="text-xs font-semibold text-slate-400">Your cinema seats have been successfully reserved.</p>
-            </div>
-
-            {/* Generated Booking ID Card */}
-            <div className="bg-rose-500/10 border border-rose-500/30 rounded-2xl p-3 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-extrabold text-rose-400 uppercase tracking-widest block">Generated Booking ID</span>
-                <span className="text-lg font-black font-mono text-white tracking-wider">{confirmedBooking.id}</span>
-              </div>
-              <button
-                onClick={handleCopyBookingId}
-                className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs flex items-center gap-1 transition-all cursor-pointer shadow-md"
-              >
-                {copiedId ? <Check size={14} /> : <Copy size={14} />}
-                <span>{copiedId ? 'Copied!' : 'Copy'}</span>
-              </button>
-            </div>
-
-            {/* Ticket Receipt Info */}
-            <div className={`p-4 rounded-2xl border space-y-2.5 text-xs font-bold ${
-              theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-slate-50 border-slate-200'
-            }`}>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Movie Title:</span>
-                <span className="text-rose-400 font-black">{confirmedBooking.movieTitle}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Theatre & Screen:</span>
-                <span className={theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}>{confirmedBooking.theater}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Showtime:</span>
-                <span className="text-emerald-400 font-extrabold">{confirmedBooking.showTime}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Reserved Seats:</span>
-                <span className="text-amber-400 font-black">{confirmedBooking.seats}</span>
-              </div>
-              <div className="flex justify-between pt-2 border-t border-dashed border-zinc-700">
-                <span className="text-slate-400">Total Amount Paid:</span>
-                <span className="text-base font-black text-rose-500">₹{confirmedBooking.amount}</span>
-              </div>
-            </div>
-
-            {/* Simulated Digital Barcode / QR Section */}
-            <div className="border border-dashed border-zinc-800 rounded-2xl p-3 text-center bg-zinc-900/50 space-y-1">
-              <div className="flex items-center justify-center gap-1.5 text-slate-400 font-mono text-[10px] tracking-widest">
-                <QrCode size={16} className="text-rose-500" />
-                <span>SCAN AT THEATRE ENTRANCE GATE</span>
-              </div>
-              <div className="w-full h-8 bg-zinc-950 rounded-lg flex items-center justify-center tracking-[0.4em] font-mono text-xs font-black text-slate-500">
-                |||| | ||||| || |||| ||| |||
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="space-y-2">
-              <button
-                onClick={handlePrintTicket}
-                className="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-slate-200 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-              >
-                <Printer size={14} /> Print / Save Ticket Receipt
-              </button>
-
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs flex items-center justify-center gap-1 transition-all cursor-pointer shadow-md"
-                >
-                  <Ticket size={14} /> My Dashboard
-                </button>
-                <button
-                  onClick={() => navigate('/movies')}
-                  className="py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-slate-300 font-extrabold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer"
-                >
-                  <Film size={14} /> Book Another
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
 
     </div>
   );
